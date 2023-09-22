@@ -1,0 +1,17 @@
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\PathFindingAlgorithms.exe
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\PathFindingAlgorithms.deps.json
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\PathFindingAlgorithms.runtimeconfig.json
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\PathFindingAlgorithms.dll
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\PathFindingAlgorithms.pdb
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.csproj.AssemblyReference.cache
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.AssemblyInfoInputs.cache
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.AssemblyInfo.cs
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.csproj.CoreCompileInputs.cache
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.csproj.CopyComplete
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.dll
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\refint\PathFindingAlgorithms.dll
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.pdb
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.genruntimeconfig.cache
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\ref\PathFindingAlgorithms.dll
