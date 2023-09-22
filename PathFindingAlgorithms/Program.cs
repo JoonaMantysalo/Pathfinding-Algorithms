@@ -1,26 +1,33 @@
 ﻿using PathFindingAlgorithms.Algorithms;
 using PathFindingAlgorithms.Grid;
+using PathFindingAlgorithms.DataCollection;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Numerics;
+using System.Xml.Serialization;
 
 namespace PathFindingAlgorithms
 {
     public class Program
     {
         const int mapSize = 256;
-        const string mapFilePath = "C:/Users/Joona/source/repos/Path Finding Algorithms/PathFindingAlgorithms/Maps/Test16room256.map";
-        const string doorStatesFilePath = "C:/Users/Joona/source/repos/Path Finding Algorithms/PathFindingAlgorithms/DoorStates/Test16room256.json";
-
 
         public static void Main(string[] args)
         {
-            int runCount = 100;
+            string mapFilePath = SetFilePath("Maps\\Test16room256.map");
+            string doorStatesFilePath = SetFilePath("DoorStates\\Test16room256.json");
+            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\testFile.csv");
 
-            while (runCount > 0)
+            int runCount = 0;
+            List<string[]> data = new List<string[]>
             {
+                new string[] { "Run", "Time" }
+            };
+
+            while (runCount < 100)
+            {
+                runCount++;
                 GridManager gridManager = new GridManager(mapSize);
-                Console.WriteLine("Loading grid...");
                 gridManager.GenerateGrid(mapFilePath);
 
                 List<Room> rooms = gridManager.rooms;
@@ -32,9 +39,6 @@ namespace PathFindingAlgorithms
 
                 doorStates.RecordDynamicDoorStates(20, doorStatesFilePath);
                 //doorStates.JsonToDoorStates(doorStatesFilePath);
-                //doorStates.Reformat(doorStatesFilePath);
-
-                Console.WriteLine("Starting pathfinding");
 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -42,19 +46,35 @@ namespace PathFindingAlgorithms
                 //AStar aStar = new AStar();
                 //aStar.Main(start, goal, doorStates);
 
-                //DStarLite dStarLite = new DStarLite(start, goal, doorStates);
-                //dStarLite.Main();
+                DStarLite dStarLite = new DStarLite(start, goal, doorStates);
+                TimeSpan elapsed = dStarLite.Main();
 
-                RTDStar rtdStar = new RTDStar();
-                rtdStar.Main(100, start, goal, 0.5, doorStates);
+                //RTDStar rtdStar = new RTDStar();
+                //rtdStar.Main(100, start, goal, 0.5, doorStates);
 
                 stopwatch.Stop();
-                Console.WriteLine("Elapsed time: " + stopwatch.Elapsed);
 
+                data.Add( new string[] { runCount.ToString(), elapsed.TotalSeconds.ToString() } );
 
-                runCount--;
-                Console.WriteLine("Finished run " + (100-runCount));
+                
+                Console.WriteLine("Finished run " + (runCount));
             }
+
+            SaveAsCSV saveCSV = new SaveAsCSV();
+            saveCSV.SaveData(dataFilePath, data);
+        }
+
+        static string SetFilePath(string fileName)
+        {
+            string saveDirectory = Path.Combine(Environment.CurrentDirectory, fileName);
+
+            string debugDirectory = "bin\\Debug\\net6.0\\";
+            if (saveDirectory.Contains(debugDirectory))
+            {
+                saveDirectory = saveDirectory.Replace(debugDirectory, "");
+            }
+
+            return saveDirectory;
         }
     }
 

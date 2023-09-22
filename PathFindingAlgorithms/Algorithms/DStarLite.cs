@@ -1,5 +1,6 @@
 ﻿using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
+using System.Diagnostics;
 
 public class DStarLite
 {
@@ -187,8 +188,11 @@ public class DStarLite
         return nextNode;
     }
 
-    public void Main()
+    public TimeSpan Main()
     {
+        Stopwatch sw = Stopwatch.StartNew();
+        TimeSpan elapsed = TimeSpan.Zero;
+
         Node lastStart = start;
         ComputeShortestPath();
         bool gridChange = false;
@@ -206,9 +210,15 @@ public class DStarLite
 
             if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
             {
+                // Let's not include the time it takes to load the doors as it is not part of the algorithm
+                sw.Stop();
+                elapsed += sw.Elapsed; 
+
                 doorStates.LoadNextDoorStates();
                 gridChange = true;
                 gridChangeTimer = 0;
+
+                sw.Restart();
             }
             else
             {
@@ -223,5 +233,7 @@ public class DStarLite
             }
             //Thread.Sleep(17);
         }
+        sw.Stop();
+        return elapsed + sw.Elapsed;
     }
 }
