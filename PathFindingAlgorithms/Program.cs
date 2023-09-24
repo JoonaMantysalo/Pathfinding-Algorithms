@@ -14,17 +14,19 @@ namespace PathFindingAlgorithms
 
         public static void Main(string[] args)
         {
-            string mapFilePath = SetFilePath("Maps\\Test16room256.map");
-            string doorStatesFilePath = SetFilePath("DoorStates\\Test16room256.json");
-            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\testFile.csv");
+            string mapFilePath = SetFilePath("Maps\\16room256.map");
+            string doorStatesFilePath = SetFilePath("DoorStates\\room256_change20");
+            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\testFile2.csv");
 
             int runCount = 0;
             List<string[]> data = new List<string[]>
             {
-                new string[] { "Run", "Time" }
+                new string[] { "Total time", "Compute time", "Path length", "Memory usage" }
             };
 
-            while (runCount < 100)
+            // Go through all the doorStates 
+            string[] doorStateFiles = Directory.GetFiles(doorStatesFilePath, "*.json");
+            foreach (string doorStateFile in doorStateFiles)
             {
                 runCount++;
                 GridManager gridManager = new GridManager(mapSize);
@@ -37,25 +39,19 @@ namespace PathFindingAlgorithms
 
                 DoorStates doorStates = new DoorStates(doors, rooms);
 
-                doorStates.RecordDynamicDoorStates(20, doorStatesFilePath);
-                //doorStates.JsonToDoorStates(doorStatesFilePath);
-
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
+                doorStates.JsonToDoorStates(doorStateFile);
 
                 //AStar aStar = new AStar();
-                //aStar.Main(start, goal, doorStates);
+                //string[] results = aStar.Main(start, goal, doorStates);
 
                 DStarLite dStarLite = new DStarLite(start, goal, doorStates);
-                TimeSpan elapsed = dStarLite.Main();
+                string[] results = dStarLite.Main();
 
                 //RTDStar rtdStar = new RTDStar();
                 //rtdStar.Main(100, start, goal, 0.5, doorStates);
 
-                stopwatch.Stop();
 
-                data.Add( new string[] { runCount.ToString(), elapsed.TotalSeconds.ToString() } );
-
+                //data.Add(results);
                 
                 Console.WriteLine("Finished run " + (runCount));
             }
@@ -77,5 +73,4 @@ namespace PathFindingAlgorithms
             return saveDirectory;
         }
     }
-
 }

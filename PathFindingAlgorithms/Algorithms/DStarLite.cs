@@ -188,10 +188,13 @@ public class DStarLite
         return nextNode;
     }
 
-    public TimeSpan Main()
+    public string[] Main()
     {
-        Stopwatch sw = Stopwatch.StartNew();
-        TimeSpan elapsed = TimeSpan.Zero;
+        Stopwatch swTotal = Stopwatch.StartNew();
+        Stopwatch swCompute = Stopwatch.StartNew();
+        TimeSpan elapsedTotal = TimeSpan.Zero;
+        TimeSpan elapsedCompute = TimeSpan.Zero;
+        int pathLength = 0;
 
         Node lastStart = start;
         ComputeShortestPath();
@@ -202,6 +205,7 @@ public class DStarLite
         {
             Node previous = start;
             start = NextStep();
+            pathLength++;
 
             if (previous == NextStep() && !gridChange)
             {
@@ -211,14 +215,17 @@ public class DStarLite
             if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
             {
                 // Let's not include the time it takes to load the doors as it is not part of the algorithm
-                sw.Stop();
-                elapsed += sw.Elapsed; 
+                swTotal.Stop();
+                swCompute.Stop();
+                elapsedTotal += swTotal.Elapsed;
+                elapsedCompute += swCompute.Elapsed;
 
                 doorStates.LoadNextDoorStates();
                 gridChange = true;
                 gridChangeTimer = 0;
 
-                sw.Restart();
+                swTotal.Restart();
+                swCompute.Restart();
             }
             else
             {
@@ -231,9 +238,19 @@ public class DStarLite
                 FindPathAfterGridChange(doorStates.changedDoors, lastStart);
                 lastStart = start;
             }
-            //Thread.Sleep(17);
+            //swCompute.Stop();
+            //elapsedCompute += swCompute.Elapsed;
+            //Thread.Sleep(2);
+            //swCompute.Restart();
         }
-        sw.Stop();
-        return elapsed + sw.Elapsed;
+        swTotal.Stop();
+        string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
+        string computeTime = (elapsedCompute + swCompute.Elapsed).TotalSeconds.ToString();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        Process currentProcess = Process.GetCurrentProcess();
+        long memoryUsage = currentProcess.PrivateMemorySize64;
+
+        return new string[] { totalTime, computeTime, pathLength.ToString(), memoryUsage.ToString() };
     }
 }

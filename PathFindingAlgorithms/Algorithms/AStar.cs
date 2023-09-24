@@ -1,5 +1,6 @@
 ﻿using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
+using System.Diagnostics;
 
 namespace PathFindingAlgorithms.Algorithms
 {
@@ -33,7 +34,7 @@ namespace PathFindingAlgorithms.Algorithms
                 foreach (var neighbour in currentNode.neighbours)
                 {
                     // Skip neighbors that are already in the closed set
-                    if (closedSet.Contains(neighbour))
+                    if (closedSet.Contains(neighbour) || neighbour.isObstacle)
                     {
                         continue;
                     }
@@ -105,39 +106,67 @@ namespace PathFindingAlgorithms.Algorithms
             return next;
         }
 
-        public void Main(Node start, Node goal, DoorStates doorStates)
+        public string[] Main(Node start, Node goal, DoorStates doorStates)
         {
-            bool gridHasChanged = false;
+            Stopwatch swTotal = Stopwatch.StartNew();
+            
+            TimeSpan elapsedTotal = TimeSpan.Zero;
+            TimeSpan elapsedCompute = TimeSpan.Zero;
+            int pathLength = 0;
+
+            bool gridChange = false;
+
+            Stopwatch swCompute = Stopwatch.StartNew();
             List<Node> path = FindPath(start, goal);
-            int changeGridTimer = 0;
+            swCompute.Stop();
+            elapsedCompute += swCompute.Elapsed;
+
+            int gridChangeTimer = 0;
             while (start != goal)
             {
                 start = NextStep(path);
-                if (start.isObstacle)
+                pathLength++;
+
+                if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
-                    Console.WriteLine("Stepped on an obstacle " + start.name);
-                }
-                if (path.Count > 2 && path[0] == path[2])
-                {
-                    Console.WriteLine("Loop in path-----------------------------------------------------");
-                }
-                if (changeGridTimer >= 20)
-                {
-                    gridHasChanged = true;
-                    changeGridTimer = 0;
+                    // Let's not include the time it takes to load the doors as it is not part of the algorithm
+                    swTotal.Stop();
+                    elapsedTotal += swTotal.Elapsed;
+
+                    doorStates.LoadNextDoorStates();
+                    gridChange = true;
+                    gridChangeTimer = 0;
+
+                    swTotal.Restart();
                 }
                 else
                 {
-                    gridHasChanged = true;
-                    changeGridTimer++;
+                    gridChange = true;
+                    gridChangeTimer++;
                 }
 
-                if (gridHasChanged)
+                if (gridChange)
                 {
+                    swCompute.Restart();
                     List<Node> newPath = FindPath(start, goal);
+                    swCompute.Stop();
+                    elapsedCompute += swCompute.Elapsed;
+
                     path = newPath;
                 }
             }
+            swTotal.Stop();
+            string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
+            string computeTime = elapsedCompute.TotalSeconds.ToString();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Process currentProcess = Process.GetCurrentProcess();
+            long memoryUsage = currentProcess.PrivateMemorySize64;
+
+            Console.WriteLine(computeTime);
+
+            return new string[] { totalTime, computeTime, pathLength.ToString(), memoryUsage.ToString() };
+
         }
     }
 }
