@@ -243,7 +243,7 @@ namespace PathFindingAlgorithms.Algorithms
 
                 last = start;
 
-                // Try to change the grid
+                // Change the grid every 20 steps
                 if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
                     doorStates.LoadNextDoorStates();

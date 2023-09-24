@@ -184,20 +184,25 @@ public class DStarLite
                 min = v_min;
             }
         }
-        if (nextNode.isObstacle) Console.WriteLine("Stepped on an obstacle----------------");
         return nextNode;
     }
 
     public string[] Main()
     {
         Stopwatch swTotal = Stopwatch.StartNew();
-        Stopwatch swCompute = Stopwatch.StartNew();
+        
         TimeSpan elapsedTotal = TimeSpan.Zero;
         TimeSpan elapsedCompute = TimeSpan.Zero;
         int pathLength = 0;
-
         Node lastStart = start;
+
+        Stopwatch swCompute = Stopwatch.StartNew();
+
         ComputeShortestPath();
+
+        swCompute.Stop();
+        elapsedCompute += swCompute.Elapsed;
+
         bool gridChange = false;
         int gridChangeTimer = 0;
 
@@ -207,25 +212,18 @@ public class DStarLite
             start = NextStep();
             pathLength++;
 
-            if (previous == NextStep() && !gridChange)
-            {
-                Console.WriteLine("Repeated node " + start.name + " and " + previous.name);
-            }
-
+            // Change the grid every 20 steps
             if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
             {
                 // Let's not include the time it takes to load the doors as it is not part of the algorithm
                 swTotal.Stop();
-                swCompute.Stop();
                 elapsedTotal += swTotal.Elapsed;
-                elapsedCompute += swCompute.Elapsed;
 
                 doorStates.LoadNextDoorStates();
                 gridChange = true;
                 gridChangeTimer = 0;
 
                 swTotal.Restart();
-                swCompute.Restart();
             }
             else
             {
@@ -235,17 +233,21 @@ public class DStarLite
 
             if (gridChange)
             {
+                swCompute.Restart();
+
                 FindPathAfterGridChange(doorStates.changedDoors, lastStart);
+
+                swCompute.Stop();
+                elapsedCompute += swCompute.Elapsed;
+
                 lastStart = start;
             }
-            //swCompute.Stop();
-            //elapsedCompute += swCompute.Elapsed;
+
             //Thread.Sleep(2);
-            //swCompute.Restart();
         }
         swTotal.Stop();
         string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
-        string computeTime = (elapsedCompute + swCompute.Elapsed).TotalSeconds.ToString();
+        string computeTime = elapsedCompute.TotalSeconds.ToString();
         GC.Collect();
         GC.WaitForPendingFinalizers();
         Process currentProcess = Process.GetCurrentProcess();

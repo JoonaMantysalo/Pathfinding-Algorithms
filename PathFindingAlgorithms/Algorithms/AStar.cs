@@ -66,7 +66,7 @@ namespace PathFindingAlgorithms.Algorithms
                 }
             }
 
-            Console.WriteLine("No path ");
+            // No path
             return new List<Node>();
         }
 
@@ -117,7 +117,9 @@ namespace PathFindingAlgorithms.Algorithms
             bool gridChange = false;
 
             Stopwatch swCompute = Stopwatch.StartNew();
+
             List<Node> path = FindPath(start, goal);
+
             swCompute.Stop();
             elapsedCompute += swCompute.Elapsed;
 
@@ -127,6 +129,7 @@ namespace PathFindingAlgorithms.Algorithms
                 start = NextStep(path);
                 pathLength++;
 
+                // Change the grid every 20 steps
                 if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
                     // Let's not include the time it takes to load the doors as it is not part of the algorithm
@@ -149,7 +152,9 @@ namespace PathFindingAlgorithms.Algorithms
                 {
                     swCompute.Restart();
                     List<Node> newPath = FindPath(start, goal);
+
                     swCompute.Stop();
+
                     elapsedCompute += swCompute.Elapsed;
 
                     path = newPath;
@@ -162,8 +167,6 @@ namespace PathFindingAlgorithms.Algorithms
             GC.WaitForPendingFinalizers();
             Process currentProcess = Process.GetCurrentProcess();
             long memoryUsage = currentProcess.PrivateMemorySize64;
-
-            Console.WriteLine(computeTime);
 
             return new string[] { totalTime, computeTime, pathLength.ToString(), memoryUsage.ToString() };
 

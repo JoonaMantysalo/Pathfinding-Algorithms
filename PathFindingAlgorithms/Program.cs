@@ -10,13 +10,37 @@ namespace PathFindingAlgorithms
 {
     public class Program
     {
-        const int mapSize = 256;
-
         public static void Main(string[] args)
         {
-            string mapFilePath = SetFilePath("Maps\\16room256.map");
-            string doorStatesFilePath = SetFilePath("DoorStates\\room256_change20");
-            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\testFile2.csv");
+            string algorithm = "";
+            int mapSize = 0;
+            int changeVolume = 0;
+            bool correctInput = false;
+
+            while (!correctInput)
+            {
+                Console.Write("Enter the parameters: ");
+                string input = Console.ReadLine();
+                string[] parts = input.Split(' ');
+
+                if (parts.Length >= 3)
+                {
+                    // Extract each part into separate variables
+                    algorithm = parts[0];
+                    int.TryParse(parts[1], out mapSize);
+                    int.TryParse(parts[2], out changeVolume);
+                }
+
+                correctInput = TestForCorrectInput(algorithm, mapSize, changeVolume);
+                if (!correctInput)
+                {
+                    Console.WriteLine("Incorrect input, try again");
+                }
+            }
+
+            string mapFilePath = SetFilePath("Maps\\16room" + mapSize + ".map");
+            string doorStatesFilePath = SetFilePath("DoorStates\\room" + mapSize + "_change" + changeVolume);
+            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\algorithm\\16room_" + algorithm + "_change" + changeVolume + ".csv");
 
             int runCount = 0;
             List<string[]> data = new List<string[]>
@@ -26,6 +50,7 @@ namespace PathFindingAlgorithms
 
             // Go through all the doorStates 
             string[] doorStateFiles = Directory.GetFiles(doorStatesFilePath, "*.json");
+            Console.WriteLine("Processing folder: " + doorStatesFilePath);
             foreach (string doorStateFile in doorStateFiles)
             {
                 runCount++;
@@ -41,18 +66,27 @@ namespace PathFindingAlgorithms
 
                 doorStates.JsonToDoorStates(doorStateFile);
 
-                //AStar aStar = new AStar();
-                //string[] results = aStar.Main(start, goal, doorStates);
+                Console.WriteLine("Processing file: " + Path.GetFileName(doorStateFile));
 
-                DStarLite dStarLite = new DStarLite(start, goal, doorStates);
-                string[] results = dStarLite.Main();
+                string[] results = new string[0];
+                switch (algorithm)
+                {
+                    case "AStar":
+                        AStar aStar = new AStar();
+                        results = aStar.Main(start, goal, doorStates);
+                        break;
+                    case "DStar-Lite":
+                        DStarLite dStarLite = new DStarLite(start, goal, doorStates);
+                        results = dStarLite.Main();
+                        break;
+                    case "RTDStar":
+                        RTDStar rtdStar = new RTDStar();
+                        rtdStar.Main(100, start, goal, 0.5, doorStates); // No result yet implemented
+                        break;
+                }
 
-                //RTDStar rtdStar = new RTDStar();
-                //rtdStar.Main(100, start, goal, 0.5, doorStates);
+                data.Add(results);
 
-
-                //data.Add(results);
-                
                 Console.WriteLine("Finished run " + (runCount));
             }
 
@@ -71,6 +105,17 @@ namespace PathFindingAlgorithms
             }
 
             return saveDirectory;
+        }
+
+        static bool TestForCorrectInput(string algorithm, int mapSize, int changeVolume)
+        {
+            if (!(algorithm == "AStar" || algorithm == "DStar-Lite" || algorithm == "RTDStar"))
+                return false;
+            if (!(mapSize == 128 || mapSize == 256 || mapSize == 512)) 
+                return false;
+            if (!(changeVolume == 2 || changeVolume == 5 || changeVolume == 10 || changeVolume == 20))
+                return false;
+            return true;
         }
     }
 }
