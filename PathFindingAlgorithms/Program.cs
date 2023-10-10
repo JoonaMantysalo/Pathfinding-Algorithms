@@ -66,7 +66,7 @@ namespace PathFindingAlgorithms
                         break;
                     case "ADStar":
                         ADStar aDStar = new ADStar();
-                        aDStar.Main(start, goal, doorStates, doors); // No result yet implemented
+                        results = aDStar.Main(start, goal, doorStates);
                         break;
                 }
 
@@ -75,8 +75,8 @@ namespace PathFindingAlgorithms
                 Console.WriteLine("Finished run " + runCount);
             }
 
-            //SaveAsCSV saveCSV = new SaveAsCSV();
-            //saveCSV.SaveData(dataFilePath, data);
+            SaveAsCSV saveCSV = new SaveAsCSV();
+            saveCSV.SaveData(dataFilePath, data);
         }
 
         static string SetFilePath(string fileName)

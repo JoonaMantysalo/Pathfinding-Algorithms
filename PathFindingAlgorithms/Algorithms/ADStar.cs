@@ -13,6 +13,9 @@ namespace PathFindingAlgorithms.Algorithms
         HashSet<Node> incons;
         double epsilon;
 
+        private int expadedNodes;
+
+
         // Manhattan heuristic
         private double Heuristic(Node from, Node to)
         {
@@ -82,6 +85,8 @@ namespace PathFindingAlgorithms.Algorithms
         {
             while (CompareKey(Key(openSet.Peek()), Key(start)) || start.RHS != start.gCost)
             {
+                expadedNodes++;
+
                 Node s = openSet.Dequeue();
                 if (s.gCost > s.RHS)
                 {
@@ -121,8 +126,14 @@ namespace PathFindingAlgorithms.Algorithms
             return nextNode;
         }
 
-        public void Main(Node startNode, Node goalNode, DoorStates doorStates, List<Door> doors)
+        public string[] Main(Node startNode, Node goalNode, DoorStates doorStates)
         {
+            Stopwatch swTotal = Stopwatch.StartNew();
+            TimeSpan elapsedTotal = TimeSpan.Zero;
+            TimeSpan elapsedCompute = TimeSpan.Zero;
+            int pathLength = 0;
+            expadedNodes = 0;
+
             start = startNode;
             goal = goalNode;
 
@@ -138,13 +149,12 @@ namespace PathFindingAlgorithms.Algorithms
             openSet.Enqueue(goal);
             goal.hasBeenExpanded = true;
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Stopwatch swCompute = Stopwatch.StartNew();
 
             ComputeorImprovePath();
 
-            double ratioOfChanged = 0;
-            Node current = start;
+            swCompute.Stop();
+            elapsedCompute += swCompute.Elapsed;
 
             while (start != goal)
             {
@@ -153,6 +163,8 @@ namespace PathFindingAlgorithms.Algorithms
                 // no new path is calculated.
                 if (epsilon > 1 || gridChange)
                 {
+                    swCompute.Restart();
+
                     if (gridChange)
                     {
                         foreach (Node changedDoor in doorStates.changedDoors)
@@ -163,14 +175,7 @@ namespace PathFindingAlgorithms.Algorithms
                                 UpdateState(neighbour);
                             }
                         }
-                        ratioOfChanged = (double)doorStates.changedDoors.Count / doors.Count;
-                    }
-                    else ratioOfChanged = 0;
-
-                    if (ratioOfChanged > 0.001) // if significant change happened
-                    {
                         epsilon += 1;
-                        // or replan from scratch
                     }
                     else if (epsilon > 1)
                     {
@@ -193,22 +198,24 @@ namespace PathFindingAlgorithms.Algorithms
                     
                     ComputeorImprovePath();
 
-                    int pathLength = 0;
-                    current = start;
-                    while (current != goal)
-                    {
-                        current = NextStep(current);
-                        pathLength++;
-                    }
+                    swCompute.Stop();
+                    elapsedCompute += swCompute.Elapsed;
                 }
 
                 start = NextStep(start);
+                pathLength++;
 
                 if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
+                    // Let's not include the time it takes to load the doors as it is not part of the algorithm
+                    swTotal.Stop();
+                    elapsedTotal += swTotal.Elapsed;
+
                     doorStates.LoadNextDoorStates();
                     gridChange = true;
                     gridChangeTimer = 0;
+
+                    swTotal.Restart();
                 }
                 else
                 {
@@ -216,9 +223,11 @@ namespace PathFindingAlgorithms.Algorithms
                     gridChangeTimer++;
                 }
             }
-            stopwatch.Stop();
-            TimeSpan elapsed = stopwatch.Elapsed;
-            Console.WriteLine("Time taken: " + elapsed);
+            swTotal.Stop();
+            string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
+            string computeTime = elapsedCompute.TotalSeconds.ToString();
+
+            return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
         }
 
     }

@@ -195,15 +195,11 @@ public class DStarLite
 
     public string[] Main()
     {
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-
-        long startMemory = GC.GetTotalMemory(true);
-
         Stopwatch swTotal = Stopwatch.StartNew();
         TimeSpan elapsedTotal = TimeSpan.Zero;
         TimeSpan elapsedCompute = TimeSpan.Zero;
         int pathLength = 0;
+
         Node lastStart = start;
 
         Stopwatch swCompute = Stopwatch.StartNew();
@@ -216,11 +212,8 @@ public class DStarLite
         bool gridChange = false;
         int gridChangeTimer = 0;
 
-        TimeSpan loadDoorTime = TimeSpan.Zero;
-
         while (start != goal)
         {
-            Node previous = start;
             start = NextStep();
             pathLength++;
 
@@ -260,9 +253,6 @@ public class DStarLite
         swTotal.Stop();
         string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
         string computeTime = elapsedCompute.TotalSeconds.ToString();
-
-        long endMemory = GC.GetTotalMemory(true);
-        long memoryUsed = endMemory - startMemory;
 
         return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
     }
