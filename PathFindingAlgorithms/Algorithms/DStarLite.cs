@@ -1,5 +1,6 @@
 ﻿using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
+using System;
 using System.Diagnostics;
 
 public class DStarLite
@@ -10,6 +11,8 @@ public class DStarLite
     private DoorStates doorStates;
     private double k_m;
 
+    private int expadedNodes;
+
     public DStarLite(Node start, Node goal, DoorStates doorStates)
     {
         this.start = start;
@@ -17,6 +20,8 @@ public class DStarLite
         this.doorStates = doorStates;
         openSet = new PriorityQueue<Node>(new NodeComparerKey());
         k_m = 0;
+
+        expadedNodes = 0;
 
         goal.RHS = 0;
         goal.key = CalculateKey(goal);
@@ -71,6 +76,7 @@ public class DStarLite
 
         while (start.RHS != start.gCost || CompareKey(openSet.Peek().key, CalculateKey(start)))
         {
+            expadedNodes++;
             Node u = openSet.Peek();
 
             double[] k_old = u.key;
@@ -189,8 +195,12 @@ public class DStarLite
 
     public string[] Main()
     {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
+        long startMemory = GC.GetTotalMemory(true);
+
         Stopwatch swTotal = Stopwatch.StartNew();
-        
         TimeSpan elapsedTotal = TimeSpan.Zero;
         TimeSpan elapsedCompute = TimeSpan.Zero;
         int pathLength = 0;
@@ -205,6 +215,8 @@ public class DStarLite
 
         bool gridChange = false;
         int gridChangeTimer = 0;
+
+        TimeSpan loadDoorTime = TimeSpan.Zero;
 
         while (start != goal)
         {
@@ -248,11 +260,10 @@ public class DStarLite
         swTotal.Stop();
         string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
         string computeTime = elapsedCompute.TotalSeconds.ToString();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        Process currentProcess = Process.GetCurrentProcess();
-        long memoryUsage = currentProcess.PrivateMemorySize64;
 
-        return new string[] { totalTime, computeTime, pathLength.ToString(), memoryUsage.ToString() };
+        long endMemory = GC.GetTotalMemory(true);
+        long memoryUsed = endMemory - startMemory;
+
+        return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
     }
 }

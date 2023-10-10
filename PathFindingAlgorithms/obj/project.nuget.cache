@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Dpih/lsw+Ysp2hUPSCZ6sV9NPSfRTfWlPdKnq2cmqPozX1PCitF8WGUJEPB6Yzss4E0Ll7M/mha0HeYXWOOzSw==",
+  "dgSpecHash": "U7lmi8ImcaqZSBA3tsIcy4e6GMKnoRUzndKJikGRCFxq6PzzTwiROOmtLzXAfbSiBe+L8KP79+Lq1D1bhQoLxQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Joona\\source\\repos\\Path Finding Algorithms\\PathFindingAlgorithms\\PathFindingAlgorithms.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Joona\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512",
+    "C:\\Users\\Joona\\.nuget\\packages\\jetbrains.dotmemoryunit\\3.2.20220510\\jetbrains.dotmemoryunit.3.2.20220510.nupkg.sha512",
     "C:\\Users\\Joona\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\Joona\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.16\\microsoft.windowsdesktop.app.ref.6.0.16.nupkg.sha512",
     "C:\\Users\\Joona\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.16\\microsoft.netcore.app.ref.6.0.16.nupkg.sha512",

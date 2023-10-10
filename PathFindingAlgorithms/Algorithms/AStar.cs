@@ -6,6 +6,8 @@ namespace PathFindingAlgorithms.Algorithms
 {
     public class AStar
     {
+        private int expadedNodes;
+
         private List<Node> FindPath(Node startNode, Node targetNode)
         {
             // Create open and closed sets to track visited nodes
@@ -20,6 +22,8 @@ namespace PathFindingAlgorithms.Algorithms
 
             while (openSet.Count > 0)
             {
+                expadedNodes++;
+
                 // Find the node with the lowest F cost in the open set
                 Node currentNode = openSet.Dequeue();
                 closedSet.Add(currentNode);
@@ -108,11 +112,16 @@ namespace PathFindingAlgorithms.Algorithms
 
         public string[] Main(Node start, Node goal, DoorStates doorStates)
         {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            long startMemory = GC.GetTotalMemory(true);
+
             Stopwatch swTotal = Stopwatch.StartNew();
-            
             TimeSpan elapsedTotal = TimeSpan.Zero;
             TimeSpan elapsedCompute = TimeSpan.Zero;
             int pathLength = 0;
+            expadedNodes = 0;
 
             bool gridChange = false;
 
@@ -163,12 +172,11 @@ namespace PathFindingAlgorithms.Algorithms
             swTotal.Stop();
             string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
             string computeTime = elapsedCompute.TotalSeconds.ToString();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Process currentProcess = Process.GetCurrentProcess();
-            long memoryUsage = currentProcess.PrivateMemorySize64;
 
-            return new string[] { totalTime, computeTime, pathLength.ToString(), memoryUsage.ToString() };
+            long endMemory = GC.GetTotalMemory(true);
+            long memoryUsed = endMemory - startMemory;
+
+            return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
 
         }
     }

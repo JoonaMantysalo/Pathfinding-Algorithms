@@ -16,3 +16,4 @@ C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\De
 C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\PathFindingAlgorithms.genruntimeconfig.cache
 C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\obj\Debug\net6.0\ref\PathFindingAlgorithms.dll
 C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\CsvHelper.dll
+C:\Users\Joona\source\repos\Path Finding Algorithms\PathFindingAlgorithms\bin\Debug\net6.0\dotMemory.Unit.dll

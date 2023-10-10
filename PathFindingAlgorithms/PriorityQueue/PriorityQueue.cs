@@ -3,7 +3,7 @@
     public class PriorityQueue<T>
     {
         private List<T> heap;
-        private Dictionary<T, int> itemIndices;
+        public Dictionary<T, int> itemIndices;
         private IComparer<T> comparer;
 
         public int Count => heap.Count;

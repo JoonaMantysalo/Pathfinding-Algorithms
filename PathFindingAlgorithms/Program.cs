@@ -1,56 +1,40 @@
 ﻿using PathFindingAlgorithms.Algorithms;
 using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.DataCollection;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Numerics;
-using System.Xml.Serialization;
 
 namespace PathFindingAlgorithms
 {
     public class Program
     {
+        static readonly string[] algorithmNames = new string[] { "AStar", "DStar-Lite", "RTDStar", "ADStar" };
+        static readonly int[] mapSizes = new int[] { 128, 256, 512 };
+        static readonly int[] changeVolumes = new int[] { 2, 5, 10, 20 };
+
         public static void Main(string[] args)
         {
-            string algorithm = "";
-            int mapSize = 0;
-            int changeVolume = 0;
-            bool correctInput = false;
 
-            while (!correctInput)
+            foreach (int size in mapSizes)
             {
-                Console.Write("Enter the parameters: ");
-                string input = Console.ReadLine();
-                string[] parts = input.Split(' ');
-
-                if (parts.Length >= 3)
-                {
-                    // Extract each part into separate variables
-                    algorithm = parts[0];
-                    int.TryParse(parts[1], out mapSize);
-                    int.TryParse(parts[2], out changeVolume);
-                }
-
-                correctInput = TestForCorrectInput(algorithm, mapSize, changeVolume);
-                if (!correctInput)
-                {
-                    Console.WriteLine("Incorrect input, try again");
-                }
+                //DoTests("DStar-Lite", size, 2);
             }
+            DoTests("ADStar", 256, 5);
+        }
 
+        static void DoTests(string algorithmName, int mapSize, int changeVolume)
+        {
             string mapFilePath = SetFilePath("Maps\\16room" + mapSize + ".map");
             string doorStatesFilePath = SetFilePath("DoorStates\\room" + mapSize + "_change" + changeVolume);
-            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\algorithm\\16room_" + algorithm + "_change" + changeVolume + ".csv");
+            string dataFilePath = SetFilePath("DataCollection\\SavedFiles\\" + algorithmName + "\\16room_" + mapSize + "map_" + algorithmName + "_change" + changeVolume + ".csv");
 
             int runCount = 0;
             List<string[]> data = new List<string[]>
             {
-                new string[] { "Total time", "Compute time", "Path length", "Memory usage" }
+                new string[] { "Total time", "Compute time", "Path length", "Expanded nodes" }
             };
 
             // Go through all the doorStates 
             string[] doorStateFiles = Directory.GetFiles(doorStatesFilePath, "*.json");
-            Console.WriteLine("Processing folder: " + doorStatesFilePath);
             foreach (string doorStateFile in doorStateFiles)
             {
                 runCount++;
@@ -63,13 +47,10 @@ namespace PathFindingAlgorithms
                 Node goal = gridManager.GetNodeAtPosition(new Vector2(mapSize - 1, mapSize - 1));
 
                 DoorStates doorStates = new DoorStates(doors, rooms);
-
                 doorStates.JsonToDoorStates(doorStateFile);
 
-                Console.WriteLine("Processing file: " + Path.GetFileName(doorStateFile));
-
                 string[] results = new string[0];
-                switch (algorithm)
+                switch (algorithmName)
                 {
                     case "AStar":
                         AStar aStar = new AStar();
@@ -83,15 +64,19 @@ namespace PathFindingAlgorithms
                         RTDStar rtdStar = new RTDStar();
                         rtdStar.Main(100, start, goal, 0.5, doorStates); // No result yet implemented
                         break;
+                    case "ADStar":
+                        ADStar aDStar = new ADStar();
+                        aDStar.Main(start, goal, doorStates, doors); // No result yet implemented
+                        break;
                 }
 
                 data.Add(results);
 
-                Console.WriteLine("Finished run " + (runCount));
+                Console.WriteLine("Finished run " + runCount);
             }
 
-            SaveAsCSV saveCSV = new SaveAsCSV();
-            saveCSV.SaveData(dataFilePath, data);
+            //SaveAsCSV saveCSV = new SaveAsCSV();
+            //saveCSV.SaveData(dataFilePath, data);
         }
 
         static string SetFilePath(string fileName)
@@ -107,13 +92,13 @@ namespace PathFindingAlgorithms
             return saveDirectory;
         }
 
-        static bool TestForCorrectInput(string algorithm, int mapSize, int changeVolume)
+        static bool TestForCorrectInput(string algorithmName, int mapSize, int changeVolume)
         {
-            if (!(algorithm == "AStar" || algorithm == "DStar-Lite" || algorithm == "RTDStar"))
+            if (!algorithmNames.Contains(algorithmName))
                 return false;
-            if (!(mapSize == 128 || mapSize == 256 || mapSize == 512)) 
+            if (!mapSizes.Contains(mapSize)) 
                 return false;
-            if (!(changeVolume == 2 || changeVolume == 5 || changeVolume == 10 || changeVolume == 20))
+            if (!changeVolumes.Contains(changeVolume))
                 return false;
             return true;
         }

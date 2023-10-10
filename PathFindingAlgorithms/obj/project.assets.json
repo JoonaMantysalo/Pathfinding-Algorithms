@@ -15,6 +15,19 @@
           }
         }
       },
+      "JetBrains.dotMemoryUnit/3.2.20220510": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/dotMemory.Unit.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/dotMemory.Unit.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Newtonsoft.Json/13.0.3": {
         "type": "package",
         "compile": {
@@ -55,6 +68,96 @@
         "lib/netstandard2.1/CsvHelper.xml"
       ]
     },
+    "JetBrains.dotMemoryUnit/3.2.20220510": {
+      "sha512": "jhzqT6zXFN0S6zxNXKmiEoNIqAEtlbsteQEhDA8TkTFfQpE/noktqU1HXfJ4P2PPczW48aFW9h69nHY8pSbnXw==",
+      "type": "package",
+      "path": "jetbrains.dotmemoryunit/3.2.20220510",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "jetbrains.dotmemoryunit.3.2.20220510.nupkg.sha512",
+        "jetbrains.dotmemoryunit.nuspec",
+        "lib/net35/dotMemory.Unit.dll",
+        "lib/net35/dotMemory.Unit.xml",
+        "lib/netstandard2.0/dotMemory.Unit.dll",
+        "lib/netstandard2.0/dotMemory.Unit.xml",
+        "lib/tools/BLToolkit.3.dll",
+        "lib/tools/Castle.Core.dll",
+        "lib/tools/DotNetZip.dll",
+        "lib/tools/JetBrains.Annotations.dll",
+        "lib/tools/JetBrains.CommandLine.Interop.dll",
+        "lib/tools/JetBrains.Common.CallTreeStorage.dll",
+        "lib/tools/JetBrains.Common.ExternalStorage.CLR40.exe",
+        "lib/tools/JetBrains.Common.ExternalStorage.CLR40.exe.config",
+        "lib/tools/JetBrains.Common.ExternalStorage.CLR40.x86.exe",
+        "lib/tools/JetBrains.Common.ExternalStorage.CLR40.x86.exe.config",
+        "lib/tools/JetBrains.Common.JetInjector.Interface.dll",
+        "lib/tools/JetBrains.Common.JetInjector.dll",
+        "lib/tools/JetBrains.Common.Remotable.Proxy.dll",
+        "lib/tools/JetBrains.Common.Remotable.Util.dll",
+        "lib/tools/JetBrains.Common.Remotable.dll",
+        "lib/tools/JetBrains.Common.Util.Metadata.dll",
+        "lib/tools/JetBrains.Common.Util.Shell.dll",
+        "lib/tools/JetBrains.Common.Util.dll",
+        "lib/tools/JetBrains.Etw.dll",
+        "lib/tools/JetBrains.Platform.ComponentModel.dll",
+        "lib/tools/JetBrains.Platform.Core.dll",
+        "lib/tools/JetBrains.Platform.Interop.WinApi.dll",
+        "lib/tools/JetBrains.Platform.Metadata.dll",
+        "lib/tools/JetBrains.Platform.RdCore.dll",
+        "lib/tools/JetBrains.Platform.Shell.dll",
+        "lib/tools/JetBrains.Platform.UIInteractive.Shell.dll",
+        "lib/tools/JetBrains.Platform.Util.dll",
+        "lib/tools/JetBrains.Profiler.Snapshot.Interface.dll",
+        "lib/tools/JetBrains.Profiler.Snapshot.dll",
+        "lib/tools/JetBrains.Profiler.Util.dll",
+        "lib/tools/JetBrains.Profiler.Windows.Api.dll",
+        "lib/tools/JetBrains.Profiler.Windows.Impl.dll",
+        "lib/tools/JetBrains.Profiler.Windows.Impl.dll.config",
+        "lib/tools/JetBrains.Profiler.Windows.RemoteAgent.dll",
+        "lib/tools/JetBrains.Profiler.Windows.RemoteAgent.dll.config",
+        "lib/tools/JetBrains.Profiler.Windows.SysTools.dll",
+        "lib/tools/JetBrains.Profiler.Windows.dll",
+        "lib/tools/JetBrains.Profiler.dll",
+        "lib/tools/JetBrains.dotMemory.Assembler.dll",
+        "lib/tools/JetBrains.dotMemory.Core.dll",
+        "lib/tools/JetBrains.dotMemory.Dal.Interface.dll",
+        "lib/tools/JetBrains.dotMemory.Dal.dll",
+        "lib/tools/JetBrains.dotMemory.Model.Interface.dll",
+        "lib/tools/JetBrains.dotMemory.Model.dll",
+        "lib/tools/JetBrains.dotMemory.Resources.dll",
+        "lib/tools/JetBrains.dotMemory.Shellless.dll",
+        "lib/tools/JetBrains.dotMemoryUnit.ClientController.dll",
+        "lib/tools/JetBrains.dotMemoryUnit.Interface.dll",
+        "lib/tools/JetBrains.dotMemoryUnit.Interop.Console.dll",
+        "lib/tools/JetBrains.dotMemoryUnit.Server.exe",
+        "lib/tools/JetBrains.dotMemoryUnit.Server.exe.config",
+        "lib/tools/Newtonsoft.Json.dll",
+        "lib/tools/dotMemory.Unit.dll",
+        "lib/tools/dotMemory.Unit.xml",
+        "lib/tools/dotMemoryUnit.config.xslt",
+        "lib/tools/dotMemoryUnit.exe",
+        "lib/tools/dotMemoryUnit.exe.config",
+        "lib/tools/jetbrains_license.md",
+        "lib/tools/netstandard2.0/JetBrains.Platform.Interop.WinApi.dll",
+        "lib/tools/netstandard2.0/JetBrains.dotMemoryUnit.ClientController.dll",
+        "lib/tools/netstandard2.0/JetBrains.dotMemoryUnit.Interface.dll",
+        "lib/tools/netstandard2.0/System.Private.ServiceModel.dll",
+        "lib/tools/netstandard2.0/System.ServiceModel.NetTcp.dll",
+        "lib/tools/netstandard2.0/System.ServiceModel.Primitives.dll",
+        "lib/tools/netstandard2.0/dotMemory.Unit.dll",
+        "lib/tools/x64/JetBrains.Common.NativeUtils.dll",
+        "lib/tools/x64/JetBrains.Profiler.Windows.Core.dll",
+        "lib/tools/x64/JetBrains.Profiler.Windows.CoreApi.dll",
+        "lib/tools/x64/symsrv.dll",
+        "lib/tools/x64/symsrv.yes",
+        "lib/tools/x86/JetBrains.Common.NativeUtils.dll",
+        "lib/tools/x86/JetBrains.Profiler.Windows.Core.dll",
+        "lib/tools/x86/JetBrains.Profiler.Windows.CoreApi.dll",
+        "lib/tools/x86/symsrv.dll",
+        "lib/tools/x86/symsrv.yes"
+      ]
+    },
     "Newtonsoft.Json/13.0.3": {
       "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
       "type": "package",
@@ -89,6 +192,7 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "CsvHelper >= 30.0.1",
+      "JetBrains.DotMemoryUnit >= 3.2.20220510",
       "Newtonsoft.Json >= 13.0.3"
     ]
   },
@@ -138,6 +242,10 @@
           "CsvHelper": {
             "target": "Package",
             "version": "[30.0.1, )"
+          },
+          "JetBrains.DotMemoryUnit": {
+            "target": "Package",
+            "version": "[3.2.20220510, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",
