@@ -112,11 +112,6 @@ namespace PathFindingAlgorithms.Algorithms
 
         public string[] Main(Node start, Node goal, DoorStates doorStates)
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            long startMemory = GC.GetTotalMemory(true);
-
             Stopwatch swTotal = Stopwatch.StartNew();
             TimeSpan elapsedTotal = TimeSpan.Zero;
             TimeSpan elapsedCompute = TimeSpan.Zero;
@@ -172,9 +167,6 @@ namespace PathFindingAlgorithms.Algorithms
             swTotal.Stop();
             string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
             string computeTime = elapsedCompute.TotalSeconds.ToString();
-
-            long endMemory = GC.GetTotalMemory(true);
-            long memoryUsed = endMemory - startMemory;
 
             return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
 

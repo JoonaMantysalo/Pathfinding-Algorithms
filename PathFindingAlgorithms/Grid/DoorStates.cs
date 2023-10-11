@@ -25,6 +25,9 @@ namespace PathFindingAlgorithms.Grid
             RandomizedDFS rdfs = new RandomizedDFS();
             Random random = new Random();
 
+            int ratioOfClosed = 80;
+            int ratioOfOpened = 20;
+
             CloseDoors();
             ResetRooms();
             rdfs.CreateMaze(rooms);
@@ -38,9 +41,9 @@ namespace PathFindingAlgorithms.Grid
             // Set up the inital states of the doors
             foreach (Door door in dynamicDoors)
             {
-                if (random.Next(100) < 20)
+                if (random.Next(100) < ratioOfOpened)
                 {
-                    door.Change();
+                    door.Open();
                 }
             }
             RecordDoorStates(filePath);
@@ -50,9 +53,11 @@ namespace PathFindingAlgorithms.Grid
             {
                 foreach (Door door in dynamicDoors)
                 {
-                    if (random.Next(100) < changeSize)
-                    {
-                        door.Change();
+                    if (door.isObstacle && (random.Next(10000) < ((changeSize/2.0)/ratioOfClosed) * 10000)) {
+                        door.Open();
+                    }
+                    else if (!door.isObstacle && (random.Next(10000) < ((changeSize/2.0)/ratioOfOpened) * 10000)) {
+                        door.Close();
                     }
                 }
                 RecordDoorStates(filePath);
@@ -72,7 +77,7 @@ namespace PathFindingAlgorithms.Grid
             foreach (Room room in rooms) room.visited = false;
         }
 
-        public void RecordDoorStates(string filePath)
+        private void RecordDoorStates(string filePath)
         {
             foreach (var door in doors)
             {

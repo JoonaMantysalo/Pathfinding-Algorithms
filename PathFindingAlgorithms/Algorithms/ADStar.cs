@@ -144,6 +144,7 @@ namespace PathFindingAlgorithms.Algorithms
             incons = new HashSet<Node>();
             bool gridChange = false;
             int gridChangeTimer = 0;
+            int computeTimer = 0;
 
             goal.key = Key(goal);
             openSet.Enqueue(goal);
@@ -158,11 +159,12 @@ namespace PathFindingAlgorithms.Algorithms
 
             while (start != goal)
             {
-                // Currently a new path is calculated with a lower epsilon value.
+                // Currently a new path is calculated with a lower epsilon value every 5th step.
                 // If a path is already calculated with epsilon of 1, and no grid hasn't changed
                 // no new path is calculated.
-                if (epsilon > 1 || gridChange)
+                if ((epsilon > 1 && computeTimer >= 4) || gridChange)
                 {
+                    computeTimer = 0;
                     swCompute.Restart();
 
                     if (gridChange)
@@ -192,15 +194,17 @@ namespace PathFindingAlgorithms.Algorithms
                         node.key = Key(node);
                         openSet.UpdatePriority(node);
                     }
-                    
+
                     incons.Clear();
                     closedSet.Clear();
-                    
+
                     ComputeorImprovePath();
+                    //Console.WriteLine(start.name);
 
                     swCompute.Stop();
                     elapsedCompute += swCompute.Elapsed;
                 }
+                else computeTimer++;
 
                 start = NextStep(start);
                 pathLength++;
