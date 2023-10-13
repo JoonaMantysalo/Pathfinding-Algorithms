@@ -25,7 +25,7 @@ namespace PathFindingAlgorithms.Algorithms
         private double Cost(Node node1, Node node2)
         {
             if (node1.isObstacle || node2.isObstacle) return double.PositiveInfinity;
-            return 2*Heuristic(node1, node2); // Calculated same way using Manhattan distance
+            return Heuristic(node1, node2); // Calculated same way using Manhattan distance
         }
 
         double[] Key(Node s)
@@ -34,7 +34,7 @@ namespace PathFindingAlgorithms.Algorithms
             {
                 return new double[2] { s.RHS + epsilon * Heuristic(s, start), s.RHS };
             }
-            else return new double[2] { s.gCost + epsilon * Heuristic(s, start), s.gCost };
+            else return new double[2] { s.gCost + Heuristic(s, start), s.gCost };
         }
 
         private bool CompareKey(double[] key1, double[] key2)
@@ -130,8 +130,9 @@ namespace PathFindingAlgorithms.Algorithms
         {
             Stopwatch swTotal = Stopwatch.StartNew();
             TimeSpan elapsedTotal = TimeSpan.Zero;
-            TimeSpan elapsedCompute = TimeSpan.Zero;
+            TimeSpan totalReCompute = TimeSpan.Zero;
             int pathLength = 0;
+            int reComputeTimer = 0;
             expadedNodes = 0;
 
             start = startNode;
@@ -150,12 +151,9 @@ namespace PathFindingAlgorithms.Algorithms
             openSet.Enqueue(goal);
             goal.hasBeenExpanded = true;
 
-            Stopwatch swCompute = Stopwatch.StartNew();
-
             ComputeorImprovePath();
 
-            swCompute.Stop();
-            elapsedCompute += swCompute.Elapsed;
+            Node previous = start;
 
             while (start != goal)
             {
@@ -165,7 +163,6 @@ namespace PathFindingAlgorithms.Algorithms
                 if ((epsilon > 1 && computeTimer >= 4) || gridChange)
                 {
                     computeTimer = 0;
-                    swCompute.Restart();
 
                     if (gridChange)
                     {
@@ -198,16 +195,23 @@ namespace PathFindingAlgorithms.Algorithms
                     incons.Clear();
                     closedSet.Clear();
 
-                    ComputeorImprovePath();
-                    //Console.WriteLine(start.name);
+                    Stopwatch reComputeSW = Stopwatch.StartNew();
 
-                    swCompute.Stop();
-                    elapsedCompute += swCompute.Elapsed;
+                    ComputeorImprovePath();
+
+                    reComputeSW.Stop();
+                    totalReCompute += reComputeSW.Elapsed;
+                    reComputeTimer++;
                 }
                 else computeTimer++;
 
+                if (previous == NextStep(start) && !gridChange) Console.WriteLine("Not like this " + previous.name);
+                previous = start;
+
                 start = NextStep(start);
                 pathLength++;
+
+                
 
                 if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
@@ -228,11 +232,11 @@ namespace PathFindingAlgorithms.Algorithms
                 }
             }
             swTotal.Stop();
-            string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
-            string computeTime = elapsedCompute.TotalSeconds.ToString();
+            elapsedTotal += swTotal.Elapsed;
+            string totalTime = elapsedTotal.TotalSeconds.ToString();
 
-            return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
+            return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(),
+                reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
         }
-
     }
 }

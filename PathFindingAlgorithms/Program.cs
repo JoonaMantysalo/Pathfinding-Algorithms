@@ -30,7 +30,7 @@ namespace PathFindingAlgorithms
             int runCount = 0;
             List<string[]> data = new List<string[]>
             {
-                new string[] { "Total time", "Compute time", "Path length", "Expanded nodes" }
+                new string[] { "Total time (s)", "Total recompute time (ms)", "Amount of recomputes",  "Path length", "Expanded nodes" }
             };
 
             // Go through all the doorStates 
@@ -62,7 +62,7 @@ namespace PathFindingAlgorithms
                         break;
                     case "RTDStar":
                         RTDStar rtdStar = new RTDStar();
-                        rtdStar.Main(100, start, goal, 0.5, doorStates); // No result yet implemented
+                        results = rtdStar.Main(300, start, goal, 0.5, doorStates);
                         break;
                     case "ADStar":
                         ADStar aDStar = new ADStar();

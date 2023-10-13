@@ -114,18 +114,14 @@ namespace PathFindingAlgorithms.Algorithms
         {
             Stopwatch swTotal = Stopwatch.StartNew();
             TimeSpan elapsedTotal = TimeSpan.Zero;
-            TimeSpan elapsedCompute = TimeSpan.Zero;
+            TimeSpan totalReCompute = TimeSpan.Zero;
             int pathLength = 0;
+            int reComputeTimer = 0;
             expadedNodes = 0;
 
             bool gridChange = false;
 
-            Stopwatch swCompute = Stopwatch.StartNew();
-
             List<Node> path = FindPath(start, goal);
-
-            swCompute.Stop();
-            elapsedCompute += swCompute.Elapsed;
 
             int gridChangeTimer = 0;
             while (start != goal)
@@ -154,21 +150,21 @@ namespace PathFindingAlgorithms.Algorithms
 
                 if (gridChange)
                 {
-                    swCompute.Restart();
-                    List<Node> newPath = FindPath(start, goal);
+                    Stopwatch reComputeSW = Stopwatch.StartNew();
 
-                    swCompute.Stop();
+                    path = FindPath(start, goal);
 
-                    elapsedCompute += swCompute.Elapsed;
-
-                    path = newPath;
+                    reComputeSW.Stop();
+                    totalReCompute += reComputeSW.Elapsed;
+                    reComputeTimer++;
                 }
             }
             swTotal.Stop();
-            string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
-            string computeTime = elapsedCompute.TotalSeconds.ToString();
+            elapsedTotal += swTotal.Elapsed;
+            string totalTime = elapsedTotal.TotalSeconds.ToString();
 
-            return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
+            return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(),
+                reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
 
         }
     }

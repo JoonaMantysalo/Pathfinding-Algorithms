@@ -197,17 +197,13 @@ public class DStarLite
     {
         Stopwatch swTotal = Stopwatch.StartNew();
         TimeSpan elapsedTotal = TimeSpan.Zero;
-        TimeSpan elapsedCompute = TimeSpan.Zero;
+        TimeSpan totalReCompute = TimeSpan.Zero;
         int pathLength = 0;
+        int reComputeTimer = 0;
 
         Node lastStart = start;
 
-        Stopwatch swCompute = Stopwatch.StartNew();
-
         ComputeShortestPath();
-
-        swCompute.Stop();
-        elapsedCompute += swCompute.Elapsed;
 
         bool gridChange = false;
         int gridChangeTimer = 0;
@@ -238,22 +234,22 @@ public class DStarLite
 
             if (gridChange)
             {
-                swCompute.Restart();
+                Stopwatch reComputeSW = Stopwatch.StartNew();
 
                 FindPathAfterGridChange(doorStates.changedDoors, lastStart);
 
-                swCompute.Stop();
-                elapsedCompute += swCompute.Elapsed;
+                reComputeSW.Stop();
+                totalReCompute += reComputeSW.Elapsed;
+                reComputeTimer++;
 
                 lastStart = start;
             }
-
-            //Thread.Sleep(2);
         }
         swTotal.Stop();
-        string totalTime = (elapsedTotal + swTotal.Elapsed).TotalSeconds.ToString();
-        string computeTime = elapsedCompute.TotalSeconds.ToString();
+        elapsedTotal += swTotal.Elapsed;
+        string totalTime = elapsedTotal.TotalSeconds.ToString();
 
-        return new string[] { totalTime, computeTime, pathLength.ToString(), expadedNodes.ToString() };
+        return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(), 
+            reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
     }
 }

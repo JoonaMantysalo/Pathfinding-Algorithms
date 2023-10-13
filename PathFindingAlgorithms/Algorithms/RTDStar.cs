@@ -17,6 +17,8 @@ namespace PathFindingAlgorithms.Algorithms
         private PriorityQueue<Node> openSet;
         private double k_m;
 
+        private int expadedNodes;
+
         public void InitializeDStar(Node start, Node goal)
         {
             this.start = start;
@@ -79,6 +81,8 @@ namespace PathFindingAlgorithms.Algorithms
                 globalLimit--;
 
                 Node u = openSet.Peek();
+
+                expadedNodes++;
 
                 double[] k_old = u.key;
                 double[] k_new = CalculateKey(u);
@@ -215,20 +219,44 @@ namespace PathFindingAlgorithms.Algorithms
             else throw new Exception("No valid status");
         }
 
-        public void Main(int expandLimit, Node startNode, Node goalNode, double localRatio, DoorStates doorStates)
+        public string[] Main(int expandLimit, Node startNode, Node goalNode, double localRatio, DoorStates doorStates)
         {
+            Stopwatch swTotal = Stopwatch.StartNew();
+            Stopwatch reComputeSW = new Stopwatch();
+            TimeSpan elapsedTotal = TimeSpan.Zero;
+            TimeSpan totalReCompute = TimeSpan.Zero;
+            int pathLength = 0;
+            int reComputeTimer = 0;
+
             int localLimit = (int)(localRatio * expandLimit);
             int globalLimit = expandLimit - localLimit;
             Node last = startNode;
             InitializeDStar(startNode, goalNode);
             Status status = ComputeShortestPath(globalLimit);
+
             bool gridChange = false;
             int gridChangeTimer = 0;
 
             while (start != goal)
             {
-                start = ChooseStep(localLimit, status);
+                if (gridChange)
+                {
+                    // Since ChooseStep can run LLS-LRTA after a change in the grid, need to measure it
+                    reComputeSW.Restart();
+
+                    start = ChooseStep(localLimit, status);
+
+                    reComputeSW.Stop();
+                    totalReCompute += reComputeSW.Elapsed;
+                }
+                else
+                {
+                    // Still get the next step when no grid change 
+                    start = ChooseStep(localLimit, status);
+                }
+
                 k_m = k_m + Heuristic(last, start);
+                pathLength++;
 
                 if (start.isObstacle)
                     Console.WriteLine("Moved to an obsacle at " + start.name + "\n"
@@ -246,9 +274,15 @@ namespace PathFindingAlgorithms.Algorithms
                 // Change the grid every 20 steps
                 if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
                 {
+                    // Let's not include the time it takes to load the doors as it is not part of the algorithm
+                    swTotal.Stop();
+                    elapsedTotal += swTotal.Elapsed;
+
                     doorStates.LoadNextDoorStates();
                     gridChange = true;
                     gridChangeTimer = 0;
+
+                    swTotal.Restart();
                 }
                 else
                 {
@@ -258,13 +292,29 @@ namespace PathFindingAlgorithms.Algorithms
 
                 if (gridChange)
                 {
-                    UpdateNodeCosts(doorStates.changedDoors);
-                }
-                
-                status = ComputeShortestPath(globalLimit);
+                    // Measure the time it takes to compute a new path after a change in the grid
+                    reComputeSW.Restart();
 
-                //Thread.Sleep(20);
+                    UpdateNodeCosts(doorStates.changedDoors);
+
+                    status = ComputeShortestPath(globalLimit);
+
+                    reComputeSW.Stop();
+                    totalReCompute += reComputeSW.Elapsed;
+                    reComputeTimer++;
+                }
+                else
+                {
+                    // Still run ComputeShortestPath every step 
+                    status = ComputeShortestPath(globalLimit);
+                }
             }
+            swTotal.Stop();
+            elapsedTotal += swTotal.Elapsed;
+            string totalTime = elapsedTotal.TotalSeconds.ToString();
+
+            return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(),
+                reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
         }
 
         enum Status
