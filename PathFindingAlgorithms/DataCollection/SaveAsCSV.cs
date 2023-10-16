@@ -1,7 +1,4 @@
-﻿using CsvHelper;
-using System.Globalization;
-
-namespace PathFindingAlgorithms.DataCollection
+﻿namespace PathFindingAlgorithms.DataCollection
 {
     public class SaveAsCSV
     {

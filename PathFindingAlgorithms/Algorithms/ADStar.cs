@@ -195,13 +195,23 @@ namespace PathFindingAlgorithms.Algorithms
                     incons.Clear();
                     closedSet.Clear();
 
-                    Stopwatch reComputeSW = Stopwatch.StartNew();
+                    // Measure the time it takes to compute a path after grid change
+                    // If no grid change then just try to improve the path
+                    if (gridChange)
+                    {
+                        Stopwatch reComputeSW = Stopwatch.StartNew();
 
-                    ComputeorImprovePath();
+                        ComputeorImprovePath();
 
-                    reComputeSW.Stop();
-                    totalReCompute += reComputeSW.Elapsed;
-                    reComputeTimer++;
+                        reComputeSW.Stop();
+                        totalReCompute += reComputeSW.Elapsed;
+                        reComputeTimer++;
+                    }
+                    else
+                    {
+                        ComputeorImprovePath();
+                    }
+
                 }
                 else computeTimer++;
 
@@ -211,9 +221,9 @@ namespace PathFindingAlgorithms.Algorithms
                 start = NextStep(start);
                 pathLength++;
 
-                
 
-                if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
+                // Change the grid every 10 steps
+                if (start.GetType() != typeof(Door) && gridChangeTimer >= 10)
                 {
                     // Let's not include the time it takes to load the doors as it is not part of the algorithm
                     swTotal.Stop();
@@ -234,9 +244,12 @@ namespace PathFindingAlgorithms.Algorithms
             swTotal.Stop();
             elapsedTotal += swTotal.Elapsed;
             string totalTime = elapsedTotal.TotalSeconds.ToString();
+            string totalReComputeTime = totalReCompute.TotalMilliseconds.ToString();
+            string totalReComputes = reComputeTimer.ToString();
+            string averageReComputeTime = (totalReCompute.TotalMilliseconds / reComputeTimer).ToString();
 
-            return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(),
-                reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
+            return new string[] { totalTime, totalReComputeTime, totalReComputes, averageReComputeTime,
+                pathLength.ToString(), expadedNodes.ToString() };
         }
     }
 }

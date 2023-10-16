@@ -141,7 +141,6 @@ public class DStarLite
                 else if (u.RHS == CostReal(u, v) + v.gCost)
                 {
                     u.RHS = double.PositiveInfinity; // Is obstacle now
-
                 }
             }
             UpdateNodeCostsNeighbours(u.neighbours, u);
@@ -248,10 +247,11 @@ public class DStarLite
         swTotal.Stop();
         elapsedTotal += swTotal.Elapsed;
         string totalTime = elapsedTotal.TotalSeconds.ToString();
+        string totalReComputeTime = totalReCompute.TotalMilliseconds.ToString();
+        string totalReComputes = reComputeTimer.ToString();
+        string averageReComputeTime = (totalReCompute.TotalMilliseconds / reComputeTimer).ToString();
 
-        Console.WriteLine(totalTime);
-
-        return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(), 
-            reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };
+        return new string[] { totalTime, totalReComputeTime, totalReComputes, averageReComputeTime,
+                pathLength.ToString(), expadedNodes.ToString() };
     }
 }

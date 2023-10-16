@@ -2,6 +2,7 @@
 using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.DataCollection;
 using System.Numerics;
+using System.Linq;
 
 namespace PathFindingAlgorithms
 {
@@ -14,14 +15,10 @@ namespace PathFindingAlgorithms
         public static void Main(string[] args)
         {
 
-            foreach (int size in mapSizes)
+            foreach (string algorithm in algorithmNames)
             {
-                //DoTests("DStar-Lite", size, 2);
+                DoTests(algorithm, 128, 10);
             }
-            DoTests("DStar-Lite", 128, 10);
-            DoTests("AStar", 128, 10);
-            DoTests("DStar-Lite", 128, 20);
-            DoTests("AStar", 128, 20);
         }
 
         static void DoTests(string algorithmName, int mapSize, int changeVolume)
@@ -33,7 +30,9 @@ namespace PathFindingAlgorithms
             int runCount = 0;
             List<string[]> data = new List<string[]>
             {
-                new string[] { "Total time (s)", "Total recompute time (ms)", "Amount of recomputes",  "Path length", "Expanded nodes" }
+                new string[] { "Total time (s)", "Total recompute time (ms)", "Amount of recomputes", "Average recompute time (ms)", "Path length", "Expanded nodes" },
+                new string[] {"=AVERAGE(A4:A103)", "=AVERAGE(B4:B103)", "=AVERAGE(C4:C103)", "=AVERAGE(D4:D103)", "=AVERAGE(E4:E103)", "=AVERAGE(F4:F103)" },
+                new string[] { "---------------------------------------------------------------------------------------------" }
             };
 
             // Go through all the doorStates 
@@ -72,7 +71,6 @@ namespace PathFindingAlgorithms
                         results = aDStar.Main(start, goal, doorStates);
                         break;
                 }
-
                 data.Add(results);
 
                 Console.WriteLine("Finished run " + runCount);

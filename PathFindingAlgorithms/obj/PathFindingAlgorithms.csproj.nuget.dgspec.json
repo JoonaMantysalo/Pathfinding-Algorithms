@@ -47,9 +47,17 @@
               "target": "Package",
               "version": "[30.0.1, )"
             },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[6.2.10, )"
+            },
             "JetBrains.DotMemoryUnit": {
               "target": "Package",
               "version": "[3.2.20220510, )"
+            },
+            "Microsoft.Office.Interop.Excel": {
+              "target": "Package",
+              "version": "[15.0.4795.1001, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
