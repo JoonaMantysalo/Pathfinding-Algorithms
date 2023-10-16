@@ -213,8 +213,8 @@ public class DStarLite
             start = NextStep();
             pathLength++;
 
-            // Change the grid every 20 steps
-            if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
+            // Change the grid every 10 steps
+            if (start.GetType() != typeof(Door) && gridChangeTimer >= 10)
             {
                 // Let's not include the time it takes to load the doors as it is not part of the algorithm
                 swTotal.Stop();
@@ -248,6 +248,8 @@ public class DStarLite
         swTotal.Stop();
         elapsedTotal += swTotal.Elapsed;
         string totalTime = elapsedTotal.TotalSeconds.ToString();
+
+        Console.WriteLine(totalTime);
 
         return new string[] { totalTime, totalReCompute.TotalMilliseconds.ToString(), 
             reComputeTimer.ToString() ,pathLength.ToString(), expadedNodes.ToString() };

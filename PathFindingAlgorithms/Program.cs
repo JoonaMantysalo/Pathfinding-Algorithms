@@ -18,7 +18,10 @@ namespace PathFindingAlgorithms
             {
                 //DoTests("DStar-Lite", size, 2);
             }
-            DoTests("ADStar", 256, 5);
+            DoTests("DStar-Lite", 128, 10);
+            DoTests("AStar", 128, 10);
+            DoTests("DStar-Lite", 128, 20);
+            DoTests("AStar", 128, 20);
         }
 
         static void DoTests(string algorithmName, int mapSize, int changeVolume)
@@ -90,17 +93,6 @@ namespace PathFindingAlgorithms
             }
 
             return saveDirectory;
-        }
-
-        static bool TestForCorrectInput(string algorithmName, int mapSize, int changeVolume)
-        {
-            if (!algorithmNames.Contains(algorithmName))
-                return false;
-            if (!mapSizes.Contains(mapSize)) 
-                return false;
-            if (!changeVolumes.Contains(changeVolume))
-                return false;
-            return true;
         }
     }
 }

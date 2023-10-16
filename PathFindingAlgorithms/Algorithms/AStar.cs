@@ -37,7 +37,7 @@ namespace PathFindingAlgorithms.Algorithms
                 // Explore the neighbors of the current node
                 foreach (var neighbour in currentNode.neighbours)
                 {
-                    // Skip neighbors that are already in the closed set
+                    // Skip neighbors that are already in the closed set or obstacles
                     if (closedSet.Contains(neighbour) || neighbour.isObstacle)
                     {
                         continue;
@@ -129,8 +129,8 @@ namespace PathFindingAlgorithms.Algorithms
                 start = NextStep(path);
                 pathLength++;
 
-                // Change the grid every 20 steps
-                if (start.GetType() != typeof(Door) && gridChangeTimer >= 20)
+                // Change the grid every 10 steps
+                if (start.GetType() != typeof(Door) && gridChangeTimer >= 10)
                 {
                     // Let's not include the time it takes to load the doors as it is not part of the algorithm
                     swTotal.Stop();
@@ -144,7 +144,7 @@ namespace PathFindingAlgorithms.Algorithms
                 }
                 else
                 {
-                    gridChange = true;
+                    gridChange = false;
                     gridChangeTimer++;
                 }
 
