@@ -2,7 +2,6 @@
 using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.DataCollection;
 using System.Numerics;
-using System.Linq;
 
 namespace PathFindingAlgorithms
 {
@@ -14,14 +13,19 @@ namespace PathFindingAlgorithms
 
         public static void Main(string[] args)
         {
-
-            foreach (string algorithm in algorithmNames)
+            foreach (int size in mapSizes)
             {
-                DoTests(algorithm, 128, 10);
+                foreach (int volume in changeVolumes)
+                {
+                    RunTests("AStar", size, volume);
+                    RunTests("DStar-Lite", size, volume);
+                }
             }
+
+            Console.WriteLine("All done");
         }
 
-        static void DoTests(string algorithmName, int mapSize, int changeVolume)
+        static void RunTests(string algorithmName, int mapSize, int changeVolume)
         {
             string mapFilePath = SetFilePath("Maps\\16room" + mapSize + ".map");
             string doorStatesFilePath = SetFilePath("DoorStates\\room" + mapSize + "_change" + changeVolume);
@@ -40,15 +44,14 @@ namespace PathFindingAlgorithms
             foreach (string doorStateFile in doorStateFiles)
             {
                 runCount++;
-                GridManager gridManager = new GridManager(mapSize);
+                GridManager gridManager = new GridManagerRooms(mapSize);
                 gridManager.GenerateGrid(mapFilePath);
 
-                List<Room> rooms = gridManager.rooms;
                 List<Door> doors = gridManager.doors;
                 Node start = gridManager.GetNodeAtPosition(new Vector2(1, 1));
                 Node goal = gridManager.GetNodeAtPosition(new Vector2(mapSize - 1, mapSize - 1));
 
-                DoorStates doorStates = new DoorStates(doors, rooms);
+                DoorStates doorStates = gridManager.doorStates;
                 doorStates.JsonToDoorStates(doorStateFile);
 
                 string[] results = new string[0];
