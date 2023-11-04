@@ -8,7 +8,7 @@ namespace PathFindingAlgorithms.Grid
         public List<ObstacleBlock> changedBlocks;
 
         public List<Door> doors;
-        List<ObstacleBlock> obstacleBlocks;
+        HashSet<ObstacleBlock> obstacleBlocks;
         Dictionary<string, List<bool>> doorStates;
         string gridType;
 
@@ -22,7 +22,7 @@ namespace PathFindingAlgorithms.Grid
             changedBlocks = new List<ObstacleBlock>();
             this.gridType = gridType;
         }
-        public DoorStates(List<ObstacleBlock> obstacleBlocks, string gridType)
+        public DoorStates(HashSet<ObstacleBlock> obstacleBlocks, string gridType)
         {
             this.obstacleBlocks = obstacleBlocks;
             doorStates = new Dictionary<string, List<bool>>();
@@ -78,22 +78,11 @@ namespace PathFindingAlgorithms.Grid
             DoorStatesToJson(filePath);
         }
 
-        public void RecordDynamicDoorStatesBlocks(int count, List<ObstacleBlock> obstacleBlocks, string filePath, int changeVolume)
+        public void RecordDynamicDoorStatesBlocks(int count, string filePath, int changeVolume)
         {
-            this.obstacleBlocks = obstacleBlocks;
             Random random = new Random();
             int ratioOfClosed = 80;
             int ratioOfOpened = 20;
-
-            // Set up the inital states of the doors
-            foreach (ObstacleBlock obstacleBlock in obstacleBlocks)
-            {
-                if (random.Next(100) < ratioOfOpened)
-                {
-                    obstacleBlock.ChangeState();
-                }
-            }
-            RecordDoorStatesBlocks(filePath, obstacleBlocks);
 
             // Add the dynamic changes
             while (count > 0)
@@ -109,7 +98,7 @@ namespace PathFindingAlgorithms.Grid
                         obstacleBlock.ChangeState();
                     }
                 }
-                RecordDoorStatesBlocks(filePath, obstacleBlocks);
+                RecordDoorStatesBlocks(filePath);
                 count--;
             }
 
@@ -137,9 +126,9 @@ namespace PathFindingAlgorithms.Grid
                     doorStates[doorName].Add(door.isObstacle);
             }
         }
-        private void RecordDoorStatesBlocks(string filePath, List<ObstacleBlock> blocks)
+        private void RecordDoorStatesBlocks(string filePath)
         {
-            foreach (var obstacleBlock in blocks)
+            foreach (var obstacleBlock in obstacleBlocks)
             {
                 string blockName = obstacleBlock.name;
                 if (!doorStates.ContainsKey(blockName))
@@ -162,19 +151,24 @@ namespace PathFindingAlgorithms.Grid
 
         public void JsonToDoorStates(string filePath)
         {
-            string json = File.ReadAllText(filePath);
-            DoorStatesDataModel? dataModel = JsonConvert.DeserializeObject<DoorStatesDataModel>(json);
-            if (dataModel != null)
+            using (StreamReader file = File.OpenText(filePath))
+            using (JsonTextReader reader = new JsonTextReader(file))
             {
-                doorStates = dataModel.doorStates;
-                LoadNextDoorStates();
+                JsonSerializer serializer = new JsonSerializer();
+                DoorStatesDataModel? dataModel = serializer.Deserialize<DoorStatesDataModel>(reader);
+                if (dataModel != null)
+                {
+                    doorStates = dataModel.doorStates;
+                    LoadNextDoorStates();
+                }
             }
         }
 
         public void LoadNextDoorStates()
         {
             if (gridType == "Rooms") LoadNextDoorStatesRooms();
-            if (gridType == "Random") LoadNextDoorStatesBlocks();
+            else if (gridType == "Random") LoadNextDoorStatesBlocks();
+            else throw new Exception("No correct grid type when loading next doorstates");
         }
 
         private void LoadNextDoorStatesRooms()
@@ -200,12 +194,15 @@ namespace PathFindingAlgorithms.Grid
                 statePosition++;
             else statePosition = 0;
         }
+
         private void LoadNextDoorStatesBlocks()
         {
             changedBlocks.Clear();
-            foreach (var doorState in doorStates)
+
+            // Using pararrel execution of multiple threads as this can take a while on big sets
+            Parallel.ForEach(doorStates, doorState =>
             {
-                ObstacleBlock? foundBlock = obstacleBlocks.FirstOrDefault(obj => obj.name == doorState.Key);
+                var foundBlock = obstacleBlocks.FirstOrDefault(obj => obj.name == doorState.Key);
 
                 if (foundBlock != null)
                 {
@@ -213,14 +210,18 @@ namespace PathFindingAlgorithms.Grid
                     if (foundBlock.isObstacle() != doorState.Value[statePosition])
                     {
                         foundBlock.ChangeState();
-
-                        changedBlocks.Add(foundBlock);
+                        lock (changedBlocks)
+                        {
+                            changedBlocks.Add(foundBlock);
+                        }
                     }
                 }
-            }
+            });
+
             if (statePosition < doorStates["ObstacleBlock0"].Count - 1)
                 statePosition++;
-            else statePosition = 0;
+            else
+                statePosition = 0;
         }
     }
 }

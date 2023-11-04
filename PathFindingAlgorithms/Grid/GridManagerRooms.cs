@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using PathFindingAlgorithms.Algorithms;
 
 namespace PathFindingAlgorithms.Grid
 {
@@ -22,7 +21,7 @@ namespace PathFindingAlgorithms.Grid
             nodes = new Dictionary<Vector2, Node>();
             doors = new List<Door>();
             rooms = new List<Room>();
-            doorStates = new DoorStates(doors);
+            doorStates = new DoorStates(doors, "Rooms");
         }
 
         public void GenerateGrid(string mapFilePath)
@@ -45,7 +44,6 @@ namespace PathFindingAlgorithms.Grid
                     switch (c)
                     {
                         case '.':
-                        case 'T':
                             CreateNode(x, y);
                             x++;
                             break;
@@ -67,17 +65,9 @@ namespace PathFindingAlgorithms.Grid
             x--;
 
             SetNeighbours();
-
-            // Get the start and goal nodes
-            nodes.TryGetValue(new Vector2(1, 1), out var start);
-            nodes.TryGetValue(new Vector2(x, y), out var goal);
-
-
             SetRooms();
             SetRoomNeighbours();
             SetRoomDoors();
-
-            doorStates = new DoorStates(doors);
         }
 
         Node CreateNode(int x, int y)
@@ -88,9 +78,7 @@ namespace PathFindingAlgorithms.Grid
             Vector2 position = new Vector2(x, y);
             nodes[position] = spawnedNode;
 
-            int room = (y / roomSize * roomCount) + (x / roomSize);
-
-            spawnedNode.Init(position, room, nodeName);
+            spawnedNode.Init(position, nodeName);
 
             return spawnedNode;
         }
@@ -105,9 +93,7 @@ namespace PathFindingAlgorithms.Grid
             nodes[position] = spawnedNode;
             doors.Add(spawnedNode);
 
-            int room = (y / roomSize * roomCount) + (x / roomSize);
-
-            spawnedNode.Init(position, room, doorName);
+            spawnedNode.Init(position, doorName);
 
             // Start with every door as closed
             spawnedNode.isObstacle = true;
@@ -218,9 +204,16 @@ namespace PathFindingAlgorithms.Grid
             }
         }
 
+        
         public void RecordDoorStates(int count, string filePath, int changeVolume)
         {
-            doorStates.RecordDynamicDoorStatesRooms(count, filePath, changeVolume, rooms);
+            // Comment out to not accidently record new doorstates.
+            //doorStates.RecordDynamicDoorStatesRooms(count, filePath, changeVolume, rooms);
+        }
+
+        public void JsonToDoorStates(string filePath)
+        {
+            doorStates.JsonToDoorStates(filePath);
         }
 
         public Node GetNodeAtPosition(Vector2 pos)

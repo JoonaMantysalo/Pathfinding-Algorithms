@@ -4,7 +4,6 @@ public class Node
 {
     public List<Node> neighbours { get; private set; }
     public Vector2 position;
-    public int room;
     public string name;
 
     public double hCost;
@@ -23,10 +22,9 @@ public class Node
     public bool isObstacle = false;
     public bool hasBeenExpanded = false;
 
-    public void Init(Vector2 pos, int room, string name)
+    public void Init(Vector2 pos, string name)
     {
         this.position = pos;
-        this.room = room;
         this.name = name;
 
         gCost = double.PositiveInfinity;
