@@ -1,12 +1,6 @@
 ﻿using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PathFindingAlgorithms.Algorithms
 {
@@ -263,7 +257,7 @@ namespace PathFindingAlgorithms.Algorithms
                         + "Current status: " + status);
                 if (status == Status.COMPLETE_PATH_FOUND)
                 {
-                    if (last == NextStep() && !gridChange)
+                    if (last == NextStep() && !gridChange && start != goal)
                     {
                         Console.WriteLine("Repeated node at " + last.name + " and " + start.name);
                     }

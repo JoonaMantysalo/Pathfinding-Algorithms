@@ -1,0 +1,5 @@
+Total time (s);Total recompute time (ms);Amount of recomputes;Average recompute time (ms);Path length;Expanded nodes
+=AVERAGE(A4:A103);=AVERAGE(B4:B103);=AVERAGE(C4:C103);=AVERAGE(D4:D103);=AVERAGE(E4:E103);=AVERAGE(F4:F103)
+---------------------------------------------------------------------------------------------
+1,9300173;1757,6653;93;18,89962688172043;1034;373728
+1,6993647;1528,1802;92;16,610654347826088;1028;312857

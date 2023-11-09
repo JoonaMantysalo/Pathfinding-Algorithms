@@ -5,11 +5,11 @@ namespace PathFindingAlgorithms.Grid
     public  class DoorStates
     {
         public List<Door> changedDoors;
-        public List<ObstacleBlock> changedBlocks;
 
         public List<Door> doors;
         HashSet<ObstacleBlock> obstacleBlocks;
         Dictionary<string, List<bool>> doorStates;
+        Dictionary<int, List<string>> doorStatesAlt;
         string gridType;
 
         int statePosition = 0;
@@ -19,15 +19,14 @@ namespace PathFindingAlgorithms.Grid
             this.doors = doors;
             doorStates = new Dictionary<string, List<bool>>();
             changedDoors = new List<Door>();
-            changedBlocks = new List<ObstacleBlock>();
             this.gridType = gridType;
         }
         public DoorStates(HashSet<ObstacleBlock> obstacleBlocks, string gridType)
         {
             this.obstacleBlocks = obstacleBlocks;
             doorStates = new Dictionary<string, List<bool>>();
+            doorStatesAlt = new Dictionary<int, List<string>>();
             changedDoors = new List<Door>();
-            changedBlocks = new List<ObstacleBlock>();
             this.gridType = gridType;
         }
 
@@ -81,24 +80,29 @@ namespace PathFindingAlgorithms.Grid
         public void RecordDynamicDoorStatesBlocks(int count, string filePath, int changeVolume)
         {
             Random random = new Random();
+            int initialCount = count;
             int ratioOfClosed = 80;
             int ratioOfOpened = 20;
 
             // Add the dynamic changes
             while (count > 0)
             {
+                List<ObstacleBlock> changingBlocks = new List<ObstacleBlock>();
                 foreach (ObstacleBlock obstacleBlock in obstacleBlocks)
                 {
                     if (obstacleBlock.isObstacle() && (random.Next(10000) < ((changeVolume / 2.0) / ratioOfClosed) * 10000))
                     {
                         obstacleBlock.ChangeState();
+                        changingBlocks.Add(obstacleBlock);
                     }
                     else if (!obstacleBlock.isObstacle() && (random.Next(10000) < ((changeVolume / 2.0) / ratioOfOpened) * 10000))
                     {
                         obstacleBlock.ChangeState();
+                        changingBlocks.Add(obstacleBlock);
                     }
                 }
-                RecordDoorStatesBlocks(filePath);
+                //RecordDoorStatesBlocks(filePath);
+                RecordDoorStatesBlocks(filePath, changingBlocks, initialCount - count);
                 count--;
             }
 
@@ -126,15 +130,24 @@ namespace PathFindingAlgorithms.Grid
                     doorStates[doorName].Add(door.isObstacle);
             }
         }
-        private void RecordDoorStatesBlocks(string filePath)
+        //private void RecordDoorStatesBlocks(string filePath)
+        //{
+        //    foreach (var obstacleBlock in obstacleBlocks)
+        //    {
+        //        string blockName = obstacleBlock.name;
+        //        if (!doorStates.ContainsKey(blockName))
+        //            doorStates[blockName] = new List<bool> { obstacleBlock.isObstacle() };
+        //        else
+        //            doorStates[blockName].Add(obstacleBlock.isObstacle());
+        //    }
+        //}
+
+        private void RecordDoorStatesBlocks(string filePath, List<ObstacleBlock> changedBlocks, int currentCount)
         {
-            foreach (var obstacleBlock in obstacleBlocks)
+            doorStatesAlt[currentCount] = new List<string>();
+            foreach (var obstacleBlock in changedBlocks)
             {
-                string blockName = obstacleBlock.name;
-                if (!doorStates.ContainsKey(blockName))
-                    doorStates[blockName] = new List<bool> { obstacleBlock.isObstacle() };
-                else
-                    doorStates[blockName].Add(obstacleBlock.isObstacle());
+                doorStatesAlt[currentCount].Add(obstacleBlock.name);
             }
         }
 
@@ -142,7 +155,7 @@ namespace PathFindingAlgorithms.Grid
         {
             DoorStatesDataModel dataModel = new DoorStatesDataModel
             {
-                doorStates = doorStates
+                doorStatesAlt = doorStatesAlt
             };
 
             string json = JsonConvert.SerializeObject(dataModel, Formatting.Indented);
@@ -158,7 +171,7 @@ namespace PathFindingAlgorithms.Grid
                 DoorStatesDataModel? dataModel = serializer.Deserialize<DoorStatesDataModel>(reader);
                 if (dataModel != null)
                 {
-                    doorStates = dataModel.doorStates;
+                    doorStatesAlt = dataModel.doorStatesAlt;
                     LoadNextDoorStates();
                 }
             }
@@ -197,29 +210,25 @@ namespace PathFindingAlgorithms.Grid
 
         private void LoadNextDoorStatesBlocks()
         {
-            changedBlocks.Clear();
+            changedDoors.Clear();
 
-            // Using pararrel execution of multiple threads as this can take a while on big sets
-            Parallel.ForEach(doorStates, doorState =>
+            List<string> doorState = doorStatesAlt[statePosition];
+            var allChangedBlocks = obstacleBlocks.Where(obj => doorState.Contains(obj.name));
+
+            Parallel.ForEach(allChangedBlocks, block =>
             {
-                var foundBlock = obstacleBlocks.FirstOrDefault(obj => obj.name == doorState.Key);
-
-                if (foundBlock != null)
+                foreach (Door obstacle in block.obstacles)
                 {
-                    // If door's state gets changed
-                    if (foundBlock.isObstacle() != doorState.Value[statePosition])
+                    obstacle.Change();
+                    lock (changedDoors)
                     {
-                        foundBlock.ChangeState();
-                        lock (changedBlocks)
-                        {
-                            changedBlocks.Add(foundBlock);
-                        }
+                        changedDoors.Add(obstacle);
                     }
                 }
             });
 
-            if (statePosition < doorStates["ObstacleBlock0"].Count - 1)
-                statePosition++;
+            if (statePosition < doorStatesAlt.Count - 1)
+                statePosition++; 
             else
                 statePosition = 0;
         }

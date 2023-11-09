@@ -1,5 +1,4 @@
-﻿using PathFindingAlgorithms.Grid;
-using PathFindingAlgorithms.PriorityQueue;
+﻿using PathFindingAlgorithms.PriorityQueue;
 
 namespace PathFindingAlgorithms.Algorithms
 {
@@ -17,7 +16,9 @@ namespace PathFindingAlgorithms.Algorithms
 
             Node localGoal = openSet.Peek();
             Dijkstra();
-            return NextStep(start, localGoal);
+
+            if (localGoal != start) return NextStep(start, localGoal);
+            else return NextStep(start, goal);
         }
 
         private void AStar(Node start, Node goal, int lookahead)

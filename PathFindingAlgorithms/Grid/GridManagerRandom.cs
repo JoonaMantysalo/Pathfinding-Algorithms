@@ -155,6 +155,16 @@ namespace PathFindingAlgorithms.Grid
             }
         }
 
+        public void ResetGrid()
+        {
+            Parallel.ForEach(nodes.Values, node =>
+            {
+                node.Reset();
+                if (node.GetType() == typeof(Door)) node.isObstacle = true;
+            });
+            doorStates = new DoorStates(obstacleBlocks, "Random");
+        }
+
         public void RecordDoorStates(int count, string filePath, int changeVolume)
         {
             doorStates.RecordDynamicDoorStatesBlocks(count, filePath, changeVolume);

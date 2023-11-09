@@ -221,5 +221,10 @@ namespace PathFindingAlgorithms.Grid
             if (nodes.TryGetValue(pos, out var node)) return node;
             return null;
         }
+
+        public void ResetGrid()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

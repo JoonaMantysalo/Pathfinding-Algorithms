@@ -16,7 +16,7 @@ public class Node
     public double RHS;
     public double[] key;
 
-    public Node parent;
+    public Node? parent;
 
     public bool hCostAssigned = false;
     public bool isObstacle = false;
@@ -39,5 +39,17 @@ public class Node
     {
         if (neighbour == null) return;
         neighbours.Add(neighbour);
+    }
+
+    public void Reset()
+    {
+        hCost = double.PositiveInfinity;
+        gCost = double.PositiveInfinity;
+        gCostLSS_LRTA = double.PositiveInfinity;
+        RHS = double.PositiveInfinity;
+        key = new double[2];
+        parent = null;
+        hCostAssigned = false;
+        hasBeenExpanded = false;
     }
 }

@@ -17,5 +17,6 @@ namespace PathFindingAlgorithms.Grid
         void RecordDoorStates(int count, string filePath, int changeVolume);
         void JsonToDoorStates(string filePath);
         Node GetNodeAtPosition(Vector2 pos);
+        void ResetGrid();
     }
 }

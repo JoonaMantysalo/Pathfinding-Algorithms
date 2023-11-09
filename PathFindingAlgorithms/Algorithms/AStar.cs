@@ -157,8 +157,6 @@ namespace PathFindingAlgorithms.Algorithms
                     reComputeSW.Stop();
                     totalReCompute += reComputeSW.Elapsed;
                     reComputeTimer++;
-
-                    Console.WriteLine("Current node: " + start.name);
                 }
             }
             swTotal.Stop();

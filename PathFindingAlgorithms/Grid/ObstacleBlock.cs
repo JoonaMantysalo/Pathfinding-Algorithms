@@ -2,8 +2,8 @@
 {
     public class ObstacleBlock
     {
-        private List<Door> obstacles;
-        public string name;
+        public List<Door> obstacles {  get; private set; }
+        public string name { get; private set; }
 
         public ObstacleBlock(int blockNumber)
         {

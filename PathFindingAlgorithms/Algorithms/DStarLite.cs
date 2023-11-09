@@ -1,6 +1,5 @@
 ﻿using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
-using System;
 using System.Diagnostics;
 
 public class DStarLite
@@ -220,6 +219,7 @@ public class DStarLite
                 elapsedTotal += swTotal.Elapsed;
 
                 doorStates.LoadNextDoorStates();
+
                 gridChange = true;
                 gridChangeTimer = 0;
 

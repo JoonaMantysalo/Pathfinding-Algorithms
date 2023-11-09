@@ -10,22 +10,17 @@ namespace PathFindingAlgorithms
         static readonly string[] algorithmNames = new string[] { "AStar", "DStar-Lite", "RTDStar", "ADStar" };
         static readonly int[] mapSizes = new int[] { 128, 256, 512 };
         static readonly int[] changeVolumes = new int[] { 2, 5, 10, 20 };
+        static readonly string gridType = "Random";
 
         public static void Main(string[] args)
         {
-            string gridType = "Random";
-            RunTests("AStar", 128, 2, gridType);
-            //RunTests("AStar", 256, 2, gridType);
-            RunTests("AStar", 512, 2, gridType);
-            
-            //foreach (int size in mapSizes)
-            //{
-            //    foreach (int volume in changeVolumes)
-            //    {
-            //        RunTests("AStar", size, volume, gridType);
-            //        //RunTests("DStar-Lite", size, volume, gridType);
-            //    }
-            //}
+            foreach (int size in mapSizes)
+            {
+                foreach (int volume in changeVolumes)
+                {
+                    RunTests("AStar", size, volume, gridType);
+                }
+            }
 
             Console.WriteLine("All done");
         }
@@ -63,30 +58,30 @@ namespace PathFindingAlgorithms
             };
 
             //// Record the doorstates
-            //for (int i=1; i<=1; i++)
+            //for (int i = 1; i <= 100; i++)
             //{
             //    GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);
             //    gridManager.GenerateGrid(mapFilePath);
-            //    string doorStateFile = doorStatesFilePath + "\\doorstates" + i + ".json";
-            //    gridManager.RecordDoorStates(50, doorStateFile, changeVolume);
+            //    string doorstatefile = doorStatesFilePath + "\\doorstates" + i + ".json";
+            //    gridManager.RecordDoorStates(50, doorstatefile, changeVolume);
+            //    Console.WriteLine("Finished recording for " + algorithmName + " " + mapSize + " " + changeVolume + ". Count " + i);
             //}
-            //return;
+
+            GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);
+            gridManager.GenerateGrid(mapFilePath);
+
+            Node start = gridManager.GetNodeAtPosition(new Vector2(0, 0));
+            Node goal = gridManager.GetNodeAtPosition(new Vector2(mapSize - 1, mapSize - 1));
 
             // Go through all the doorStates 
             string[] doorStateFiles = Directory.GetFiles(doorStatesFilePath, "*.json");
             foreach (string doorStateFile in doorStateFiles)
             {
-                GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);
-                gridManager.GenerateGrid(mapFilePath);
-
-                List<Door> doors = gridManager.doors;
-                Node start = gridManager.GetNodeAtPosition(new Vector2(0, 0));
-                Node goal = gridManager.GetNodeAtPosition(new Vector2(mapSize - 1, mapSize - 1));
-
-                DoorStates doorStates = gridManager.doorStates; // ?
+                gridManager.ResetGrid();
 
                 gridManager.JsonToDoorStates(doorStateFile);
-                
+                DoorStates doorStates = gridManager.doorStates; // ?
+
                 string[] results = new string[0];
                 switch (algorithmName)
                 {
@@ -100,7 +95,7 @@ namespace PathFindingAlgorithms
                         break;
                     case "RTDStar":
                         RTDStar rtdStar = new RTDStar();
-                        results = rtdStar.Main(300, start, goal, 0.5, doorStates);
+                        results = rtdStar.Main(100, start, goal, 0.5, doorStates);
                         break;
                     case "ADStar":
                         ADStar aDStar = new ADStar();
