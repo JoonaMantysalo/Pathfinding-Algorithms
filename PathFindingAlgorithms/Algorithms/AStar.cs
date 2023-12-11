@@ -44,15 +44,15 @@ namespace PathFindingAlgorithms.Algorithms
                     }
 
                     // Calculate the G cost of reaching the neighbor from the current node
-                    double newGCost = currentNode.gCost + Cost(currentNode, neighbour);
+                    double newgCost = currentNode.gCost + Cost(currentNode, neighbour);
 
                     // If the new G cost is lower than the neighbor's G cost or the neighbor is not in the open set
                     if (openSet.Contains(neighbour))
                     {
-                        if (newGCost < neighbour.gCost)
+                        if (newgCost < neighbour.gCost)
                         {
                             // Update the neighbor's G cost
-                            neighbour.gCost = newGCost;
+                            neighbour.gCost = newgCost;
                             openSet.UpdatePriority(neighbour);
 
                             // Set the neighbor's parent to the current node
@@ -63,7 +63,7 @@ namespace PathFindingAlgorithms.Algorithms
                     {
                         // Add the neighbor to the open set
                         neighbour.hCost = Heuristic(neighbour, targetNode);
-                        neighbour.gCost = newGCost;
+                        neighbour.gCost = newgCost;
                         neighbour.parent = currentNode;
                         openSet.Enqueue(neighbour);
                     }
@@ -71,7 +71,7 @@ namespace PathFindingAlgorithms.Algorithms
             }
 
             // No path
-            return new List<Node>();
+            throw new Exception("No path found");
         }
 
         // Manhattan heuristic

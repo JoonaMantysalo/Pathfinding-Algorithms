@@ -1,4 +1,5 @@
-﻿using PathFindingAlgorithms.Grid;
+﻿using PathFindingAlgorithms.Algorithms;
+using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.PriorityQueue;
 using System.Diagnostics;
 

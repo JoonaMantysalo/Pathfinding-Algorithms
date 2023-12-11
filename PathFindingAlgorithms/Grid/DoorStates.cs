@@ -8,7 +8,6 @@ namespace PathFindingAlgorithms.Grid
 
         public List<Door> doors;
         HashSet<ObstacleBlock> obstacleBlocks;
-        Dictionary<string, List<bool>> doorStates;
         Dictionary<int, List<string>> doorStatesAlt;
         string gridType;
 
@@ -17,14 +16,13 @@ namespace PathFindingAlgorithms.Grid
         public DoorStates(List<Door> doors, string gridType)
         {
             this.doors = doors;
-            doorStates = new Dictionary<string, List<bool>>();
+            doorStatesAlt = new Dictionary<int, List<string>>();
             changedDoors = new List<Door>();
             this.gridType = gridType;
         }
         public DoorStates(HashSet<ObstacleBlock> obstacleBlocks, string gridType)
         {
             this.obstacleBlocks = obstacleBlocks;
-            doorStates = new Dictionary<string, List<bool>>();
             doorStatesAlt = new Dictionary<int, List<string>>();
             changedDoors = new List<Door>();
             this.gridType = gridType;
@@ -34,7 +32,7 @@ namespace PathFindingAlgorithms.Grid
         {
             RandomizedDFS rdfs = new RandomizedDFS();
             Random random = new Random();
-
+            int initialCount = count;
             int ratioOfClosed = 80;
             int ratioOfOpened = 20;
 
@@ -49,28 +47,35 @@ namespace PathFindingAlgorithms.Grid
             }
 
             // Set up the inital states of the doors
+            List<Door> changingDoors = new List<Door>();
             foreach (Door door in dynamicDoors)
             {
                 if (random.Next(100) < ratioOfOpened)
                 {
                     door.Open();
+                    changingDoors.Add(door);
                 }
             }
-            RecordDoorStatesRooms(filePath);
+            List<Door> initialDoors = dynamicDoors.Except(changingDoors).ToList();
+            RecordDoorStatesRooms(filePath, initialDoors, initialCount - count);
+            count--;
 
             // Add the dynamic changes
             while (count > 0)
             {
+                changingDoors = new List<Door>();
                 foreach (Door door in dynamicDoors)
                 {
                     if (door.isObstacle && (random.Next(10000) < ((changeVolume / 2.0)/ratioOfClosed) * 10000)) {
                         door.Open();
+                        changingDoors.Add(door);
                     }
                     else if (!door.isObstacle && (random.Next(10000) < ((changeVolume / 2.0)/ratioOfOpened) * 10000)) {
                         door.Close();
+                        changingDoors.Add(door);
                     }
                 }
-                RecordDoorStatesRooms(filePath);
+                RecordDoorStatesRooms(filePath, changingDoors, initialCount - count);
                 count--;
             }
 
@@ -83,6 +88,15 @@ namespace PathFindingAlgorithms.Grid
             int initialCount = count;
             int ratioOfClosed = 80;
             int ratioOfOpened = 20;
+
+            // Set up the inital states of the doors
+            foreach (ObstacleBlock obstacleBlock in obstacleBlocks)
+            {
+                if (random.Next(100) < ratioOfOpened)
+                {
+                    obstacleBlock.ChangeState();
+                }
+            }
 
             // Add the dynamic changes
             while (count > 0)
@@ -101,7 +115,6 @@ namespace PathFindingAlgorithms.Grid
                         changingBlocks.Add(obstacleBlock);
                     }
                 }
-                //RecordDoorStatesBlocks(filePath);
                 RecordDoorStatesBlocks(filePath, changingBlocks, initialCount - count);
                 count--;
             }
@@ -119,28 +132,14 @@ namespace PathFindingAlgorithms.Grid
             foreach (Room room in rooms) room.visited = false;
         }
 
-        private void RecordDoorStatesRooms(string filePath)
+        private void RecordDoorStatesRooms(string filePath, List<Door> changingDoors, int currentCount)
         {
-            foreach (var door in doors)
+            doorStatesAlt[currentCount] = new List<string>();
+            foreach (var door in changingDoors)
             {
-                string doorName = door.name;
-                if (!doorStates.ContainsKey(doorName))
-                    doorStates[doorName] = new List<bool> { door.isObstacle };
-                else
-                    doorStates[doorName].Add(door.isObstacle);
+                doorStatesAlt[currentCount].Add(door.name);
             }
         }
-        //private void RecordDoorStatesBlocks(string filePath)
-        //{
-        //    foreach (var obstacleBlock in obstacleBlocks)
-        //    {
-        //        string blockName = obstacleBlock.name;
-        //        if (!doorStates.ContainsKey(blockName))
-        //            doorStates[blockName] = new List<bool> { obstacleBlock.isObstacle() };
-        //        else
-        //            doorStates[blockName].Add(obstacleBlock.isObstacle());
-        //    }
-        //}
 
         private void RecordDoorStatesBlocks(string filePath, List<ObstacleBlock> changedBlocks, int currentCount)
         {
@@ -172,7 +171,7 @@ namespace PathFindingAlgorithms.Grid
                 if (dataModel != null)
                 {
                     doorStatesAlt = dataModel.doorStatesAlt;
-                    LoadNextDoorStates();
+                    LoadNextDoorStates(); // Load the initial state
                 }
             }
         }
@@ -187,25 +186,23 @@ namespace PathFindingAlgorithms.Grid
         private void LoadNextDoorStatesRooms()
         {
             changedDoors.Clear();
-            foreach (var doorState in doorStates)
+
+            List<string> doorState = doorStatesAlt[statePosition];
+            var allChangingDoors = doors.Where(obj => doorState.Contains(obj.name));
+
+            Parallel.ForEach(allChangingDoors, door =>
             {
-                Door? foundDoor = doors.FirstOrDefault(obj => obj.name == doorState.Key);
-
-                if (foundDoor != null)
+                door.Change();
+                lock (changedDoors)
                 {
-                    // If door's state gets changed
-                    if (foundDoor.isObstacle != doorState.Value[statePosition])
-                    {
-                        foundDoor.Change();
-
-                        changedDoors.Add(foundDoor);
-                    }
+                    changedDoors.Add(door);
                 }
-
-            }
-            if (statePosition < doorStates["Door 0"].Count - 1)
+            });
+            
+            if (statePosition < doorStatesAlt.Count - 1)
                 statePosition++;
-            else statePosition = 0;
+            else
+                statePosition = 0;
         }
 
         private void LoadNextDoorStatesBlocks()

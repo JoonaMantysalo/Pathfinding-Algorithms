@@ -2,6 +2,7 @@
 using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.DataCollection;
 using System.Numerics;
+using System.Drawing;
 
 namespace PathFindingAlgorithms
 {
@@ -14,13 +15,15 @@ namespace PathFindingAlgorithms
 
         public static void Main(string[] args)
         {
-            foreach (int size in mapSizes)
-            {
-                foreach (int volume in changeVolumes)
-                {
-                    RunTests("AStar", size, volume, gridType);
-                }
-            }
+            //foreach (int size in mapSizes)
+            //{
+            //    foreach (int volume in changeVolumes)
+            //    {
+            //        RunTests("AStar", size, volume, gridType);
+            //        RunTests("DStar-Lite", size, volume, gridType);
+            //    }
+            //}
+            RunTests("DStar-Lite", 512, 20, gridType);
 
             Console.WriteLine("All done");
         }
@@ -57,14 +60,14 @@ namespace PathFindingAlgorithms
                 new string[] { "---------------------------------------------------------------------------------------------" }
             };
 
-            //// Record the doorstates
+            // Record the doorstates
             //for (int i = 1; i <= 100; i++)
             //{
             //    GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);
             //    gridManager.GenerateGrid(mapFilePath);
             //    string doorstatefile = doorStatesFilePath + "\\doorstates" + i + ".json";
             //    gridManager.RecordDoorStates(50, doorstatefile, changeVolume);
-            //    Console.WriteLine("Finished recording for " + algorithmName + " " + mapSize + " " + changeVolume + ". Count " + i);
+            //    Console.WriteLine("Finished recording for " + mapSize + " " + changeVolume + ". Count " + i);
             //}
 
             GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);

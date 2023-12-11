@@ -208,7 +208,7 @@ namespace PathFindingAlgorithms.Grid
         public void RecordDoorStates(int count, string filePath, int changeVolume)
         {
             // Comment out to not accidently record new doorstates.
-            //doorStates.RecordDynamicDoorStatesRooms(count, filePath, changeVolume, rooms);
+            doorStates.RecordDynamicDoorStatesRooms(count, filePath, changeVolume, rooms);
         }
 
         public void JsonToDoorStates(string filePath)
@@ -224,7 +224,12 @@ namespace PathFindingAlgorithms.Grid
 
         public void ResetGrid()
         {
-            throw new NotImplementedException();
+            Parallel.ForEach(nodes.Values, node =>
+            {
+                node.Reset();
+                if (node.GetType() == typeof(Door)) node.isObstacle = false;
+            });
+            doorStates = new DoorStates(doors, "Rooms");
         }
     }
 }

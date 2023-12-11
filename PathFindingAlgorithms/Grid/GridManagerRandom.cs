@@ -121,7 +121,6 @@ namespace PathFindingAlgorithms.Grid
 
         void GetConnectedObstacles(List<Door> obstacles)
         {
-            List<ObstacleBlock> connectedObstacles = new List<ObstacleBlock>();
             HashSet<Door> visited = new HashSet<Door>();
             int blockCount = 0;
 
