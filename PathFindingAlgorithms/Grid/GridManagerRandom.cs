@@ -166,7 +166,8 @@ namespace PathFindingAlgorithms.Grid
 
         public void RecordDoorStates(int count, string filePath, int changeVolume)
         {
-            doorStates.RecordDynamicDoorStatesBlocks(count, filePath, changeVolume);
+            // Commented out to not accidently record new doorstates.
+            //doorStates.RecordDynamicDoorStatesBlocks(count, filePath, changeVolume);
         }
 
         public void JsonToDoorStates(string filePath)

@@ -71,7 +71,9 @@ namespace PathFindingAlgorithms.Algorithms
         {
             while (start.RHS != start.gCost || CompareKey(openSet.Peek().key, CalculateKey(start)))
             {
-                if (globalLimit == 0) return Status.EXPANSION_LIMIT_REACHED;
+                if (globalLimit == 0) {
+                    return Status.EXPANSION_LIMIT_REACHED;
+                }
                 globalLimit--;
 
                 Node u = openSet.Peek();

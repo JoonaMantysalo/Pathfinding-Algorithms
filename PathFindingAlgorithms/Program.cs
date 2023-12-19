@@ -2,7 +2,6 @@
 using PathFindingAlgorithms.Grid;
 using PathFindingAlgorithms.DataCollection;
 using System.Numerics;
-using System.Drawing;
 
 namespace PathFindingAlgorithms
 {
@@ -11,7 +10,7 @@ namespace PathFindingAlgorithms
         static readonly string[] algorithmNames = new string[] { "AStar", "DStar-Lite", "RTDStar", "ADStar" };
         static readonly int[] mapSizes = new int[] { 128, 256, 512 };
         static readonly int[] changeVolumes = new int[] { 2, 5, 10, 20 };
-        static readonly string gridType = "Random";
+        static readonly string gridType = "Rooms";
 
         public static void Main(string[] args)
         {
@@ -23,30 +22,41 @@ namespace PathFindingAlgorithms
             //        RunTests("DStar-Lite", size, volume, gridType);
             //    }
             //}
-            RunTests("DStar-Lite", 512, 20, gridType);
+            RunTests("RTDStar", 128, 5, gridType, 256);
 
             Console.WriteLine("All done");
         }
 
-        static void RunTests(string algorithmName, int mapSize, int changeVolume, string gridType)
+        static void RunTests(string algorithmName, int mapSize, int changeVolume, string gridType, int extraVariable)
         {
             IGridManagerFactory gridManagerFactory;
             string mapFilePath = string.Empty;
             string doorStatesFilePath = string.Empty;
             string dataFilePath = string.Empty;
+            Vector2 startNodePos = Vector2.Zero;
+
+            // RTD* and AD* use an extra variable that needs to be marked in the files seperately
+            // A* and D* Lite don't use extra variables and it should be set to 0 
+            string additionalVariable = string.Empty;
+            if (extraVariable != 0) additionalVariable = "_variable" + extraVariable.ToString();
+
             switch (gridType)
             {
                 case "Rooms":
                     gridManagerFactory = new GridManagerRoomsFactory();
                     mapFilePath = SetFilePath("Maps\\16room" + mapSize + ".map");
                     doorStatesFilePath = SetFilePath("DoorStates\\room" + mapSize + "_change" + changeVolume);
-                    dataFilePath = SetFilePath("DataCollection\\SavedFiles\\" + algorithmName + "\\16room_" + mapSize + "map_" + algorithmName + "_change" + changeVolume + ".csv");
+                    dataFilePath = SetFilePath("DataCollection\\SavedFiles\\" + algorithmName + "\\16room_" 
+                        + mapSize + "map_" + algorithmName + "_change" + changeVolume + additionalVariable + ".csv");
+                    startNodePos = new Vector2(1, 1);
                     break;
                 case "Random":
                     gridManagerFactory = new GridManagerRandomFactory();
                     mapFilePath = SetFilePath("Maps\\random" + mapSize + ".map");
                     doorStatesFilePath = SetFilePath("DoorStates\\random" + mapSize + "_change" + changeVolume);
-                    dataFilePath = SetFilePath("DataCollection\\SavedFiles\\" + algorithmName + "\\random_" + mapSize + "map_" + algorithmName + "_change" + changeVolume + ".csv");
+                    dataFilePath = SetFilePath("DataCollection\\SavedFiles\\" + algorithmName + "\\random_" 
+                        + mapSize + "map_" + algorithmName + "_change" + changeVolume + additionalVariable + ".csv");
+                    startNodePos = new Vector2(0, 0);
                     break;
                 default:
                     throw new Exception("No valid gridtype given");
@@ -73,7 +83,7 @@ namespace PathFindingAlgorithms
             GridManager gridManager = gridManagerFactory.CreateGridManager(mapSize);
             gridManager.GenerateGrid(mapFilePath);
 
-            Node start = gridManager.GetNodeAtPosition(new Vector2(0, 0));
+            Node start = gridManager.GetNodeAtPosition(startNodePos);
             Node goal = gridManager.GetNodeAtPosition(new Vector2(mapSize - 1, mapSize - 1));
 
             // Go through all the doorStates 
@@ -98,7 +108,7 @@ namespace PathFindingAlgorithms
                         break;
                     case "RTDStar":
                         RTDStar rtdStar = new RTDStar();
-                        results = rtdStar.Main(100, start, goal, 0.5, doorStates);
+                        results = rtdStar.Main(extraVariable, start, goal, 0.5, doorStates);
                         break;
                     case "ADStar":
                         ADStar aDStar = new ADStar();
